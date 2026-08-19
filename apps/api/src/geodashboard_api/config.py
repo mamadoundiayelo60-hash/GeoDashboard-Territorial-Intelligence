@@ -2,9 +2,10 @@
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Annotated
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -15,7 +16,7 @@ class Settings(BaseSettings):
     app_env: str = "development"
     api_host: str = "0.0.0.0"  # noqa: S104
     api_port: int = Field(default=8000, ge=1, le=65535)
-    api_allowed_origins: tuple[str, ...] = ("http://localhost:5173",)
+    api_allowed_origins: Annotated[tuple[str, ...], NoDecode] = ("http://localhost:5173",)
     database_url: str = "postgresql+psycopg://geodashboard:change-me@localhost/geodashboard"
     geo_api_base_url: str = "https://geo.api.gouv.fr"
     geo_api_timeout_seconds: float = Field(default=8.0, ge=1.0, le=20.0)
