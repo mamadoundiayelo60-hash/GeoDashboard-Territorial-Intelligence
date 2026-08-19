@@ -1,0 +1,35 @@
+databases:
+  - name: geodashboard-postgis
+    plan: free
+    databaseName: geodashboard
+    user: geodashboard
+
+services:
+  - type: web
+    name: geodashboard-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./infrastructure/docker/api.Dockerfile
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: geodashboard-postgis
+          property: connectionString
+      - key: API_ALLOWED_ORIGINS
+        sync: false
+
+  - type: web
+    name: geodashboard-studio
+    runtime: static
+    buildCommand: cd apps/web && npm ci && npm run build
+    staticPublishPath: ./apps/web/dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

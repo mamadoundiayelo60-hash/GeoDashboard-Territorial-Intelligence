@@ -1,0 +1,20 @@
+{
+  "title": "Acces aux equipements de proximite",
+  "template": "a4_portrait",
+  "territory": {"name": "Calais", "code": "62193", "area_km2": 33.5, "population": 67544},
+  "source_layer_name": "Equipements de demonstration",
+  "author": "Mamadou Ndiaye LO",
+  "diagnostic": {
+    "method": "Buffer euclidien intersecte au territoire",
+    "distance_m": 500,
+    "current": {"equipment_count": 8, "covered_area_km2": 18.2, "uncovered_area_km2": 15.3, "coverage_rate": 54.3, "estimated_covered_population": 36681},
+    "scenario": {"equipment_count": 10, "covered_area_km2": 25.1, "uncovered_area_km2": 8.4, "coverage_rate": 74.9, "estimated_covered_population": 50593},
+    "gain_points": 20.6,
+    "covered_geometry": {"type": "Polygon", "coordinates": [[[1.84, 50.94], [1.86, 50.94], [1.86, 50.96], [1.84, 50.96], [1.84, 50.94]]]},
+    "uncovered_geometry": {"type": "Polygon", "coordinates": [[[1.83, 50.93], [1.88, 50.93], [1.88, 50.97], [1.83, 50.97], [1.83, 50.93]]]},
+    "scenario_covered_geometry": {"type": "Polygon", "coordinates": [[[1.835, 50.935], [1.87, 50.935], [1.87, 50.965], [1.835, 50.965], [1.835, 50.935]]]},
+    "scenario_uncovered_geometry": {"type": "Polygon", "coordinates": [[[1.83, 50.93], [1.88, 50.93], [1.88, 50.97], [1.83, 50.97], [1.83, 50.93]]]},
+    "interpretation": "Le scenario ameliore nettement la couverture de 20,6 points.",
+    "warnings": ["Couverture geometrique uniquement."]
+  }
+}

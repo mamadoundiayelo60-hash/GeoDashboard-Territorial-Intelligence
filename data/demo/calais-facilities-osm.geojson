@@ -1,0 +1,1764 @@
+{
+  "type": "FeatureCollection",
+  "name": "Équipements de proximité - Calais",
+  "metadata": {
+    "source": "OpenStreetMap contributors",
+    "license": "ODbL 1.0",
+    "query": "amenity=school|college|hospital|clinic|pharmacy",
+    "territory_code": "62193",
+    "retrieved_at": "2026-08-19T15:38:26.172909+00:00"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8559032,
+          50.9326352
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie du Pont du Leu",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 374279538,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8819816,
+          50.9505408
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Marchandise",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 635051074,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8525435,
+          50.9447851
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Thomas",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 659858407,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8507438,
+          50.9474521
+        ]
+      },
+      "properties": {
+        "name": "Grande Pharmacie de Calais",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 1205970023,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8713274,
+          50.9510604
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Briane Leclercq",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 1390705538,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8492629,
+          50.9572686
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Royale",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 1947218379,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8580657,
+          50.9458621
+        ]
+      },
+      "properties": {
+        "name": "École primaire privée Saint-Pierre",
+        "amenity": "school",
+        "osm_type": "node",
+        "osm_id": 2059716977,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8581842,
+          50.9452334
+        ]
+      },
+      "properties": {
+        "name": "Collège privé Saint-Pierre",
+        "amenity": "school",
+        "osm_type": "node",
+        "osm_id": 2059717700,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8580845,
+          50.9436109
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Saint-Pierre",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 2059769557,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8543401,
+          50.9490092
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Jacquard",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 2279464527,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.9001485,
+          50.9466988
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie des Arts",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5943984865,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8568307,
+          50.9491923
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie République",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5943984866,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.856508,
+          50.9484533
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Mutualiste",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5943984867,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8592375,
+          50.946417
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Thery",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5943984869,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8666614,
+          50.945577
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie de la Nation",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5943984870,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8892773,
+          50.9463956
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie du Beau Marais",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5943984872,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8292389,
+          50.9448953
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie du Littoral",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5948953955,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8272423,
+          50.9487758
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie du Fort",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5948953956,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8426914,
+          50.9647778
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Calais Côte d'Opale",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5948953958,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8517758,
+          50.9595366
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie de la Halle",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5948953960,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.848672,
+          50.949522
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Martinage",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5949123623,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8508756,
+          50.940676
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie des Fontinettes",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 5949123624,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8554922,
+          50.948359
+        ]
+      },
+      "properties": {
+        "name": "École des Langues",
+        "amenity": "language_school",
+        "osm_type": "node",
+        "osm_id": 7075707000,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8795679,
+          50.951022
+        ]
+      },
+      "properties": {
+        "name": "Section d'enseignement général et professionnel adapté du Collège Lucien Vadez",
+        "amenity": "school",
+        "osm_type": "node",
+        "osm_id": 9326719263,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8631227,
+          50.9461549
+        ]
+      },
+      "properties": {
+        "name": "Institut de formation en soins infirmiers de la Croix-Rouge française",
+        "amenity": "college",
+        "osm_type": "node",
+        "osm_id": 9327005542,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8609364,
+          50.9463688
+        ]
+      },
+      "properties": {
+        "name": "École élémentaire Louise Pollet",
+        "amenity": "school",
+        "osm_type": "node",
+        "osm_id": 9327005558,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8615751,
+          50.9462534
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Gilbert La Fayette",
+        "amenity": "school",
+        "osm_type": "node",
+        "osm_id": 9327005559,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8481002,
+          50.9492038
+        ]
+      },
+      "properties": {
+        "name": "Conservatoire de musique Didier Lockwood",
+        "amenity": "music_school",
+        "osm_type": "node",
+        "osm_id": 9327806599,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8531354,
+          50.9436045
+        ]
+      },
+      "properties": {
+        "name": "Collège privé Jeanne d'Arc",
+        "amenity": "school",
+        "osm_type": "node",
+        "osm_id": 9327957427,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8526125,
+          50.9435472
+        ]
+      },
+      "properties": {
+        "name": "École primaire privée Jeanne d'Arc",
+        "amenity": "school",
+        "osm_type": "node",
+        "osm_id": 9327957428,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8336129,
+          50.9484109
+        ]
+      },
+      "properties": {
+        "name": "Section d'enseignement général et professionnel adapté du Collège Vauban",
+        "amenity": "school",
+        "osm_type": "node",
+        "osm_id": 9332078182,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8378046,
+          50.9558369
+        ]
+      },
+      "properties": {
+        "name": "Lycée professionnel Pierre de Coubertin",
+        "amenity": "school",
+        "osm_type": "node",
+        "osm_id": 9332119294,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8641204,
+          50.9449715
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie des 4 Quais",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 13204480800,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.866115,
+          50.9558424
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Mollien",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 13204803647,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8392449,
+          50.9427883
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie des Cailloux",
+        "amenity": "pharmacy",
+        "osm_type": "node",
+        "osm_id": 13234588982,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8496728,
+          50.9570295
+        ]
+      },
+      "properties": {
+        "name": "Équipement sans nom",
+        "amenity": "driving_school",
+        "osm_type": "node",
+        "osm_id": 13955328922,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.858051,
+          50.9463815
+        ]
+      },
+      "properties": {
+        "name": "Auto-école Meena",
+        "amenity": "driving_school",
+        "osm_type": "way",
+        "osm_id": 104544020,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8482095,
+          50.9492305
+        ]
+      },
+      "properties": {
+        "name": "École de Musique et de Danse - Didier Lockwood",
+        "amenity": "music_school",
+        "osm_type": "way",
+        "osm_id": 104566134,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8921211,
+          50.9511739
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie Hieulle",
+        "amenity": "pharmacy",
+        "osm_type": "way",
+        "osm_id": 105445655,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.884549,
+          50.9575735
+        ]
+      },
+      "properties": {
+        "name": "Unité de Santé Mentale pour Adultes",
+        "amenity": "hospital",
+        "osm_type": "way",
+        "osm_id": 106491473,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.84421,
+          50.9494142
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Les Pierrettes",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 157241778,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.842325,
+          50.9473974
+        ]
+      },
+      "properties": {
+        "name": "Lycée général et technologique Sophie Berthelot",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 157241779,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8835777,
+          50.9507548
+        ]
+      },
+      "properties": {
+        "name": "IUT du littoral - Calais",
+        "amenity": "college",
+        "osm_type": "way",
+        "osm_id": 195611606,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8564287,
+          50.9526251
+        ]
+      },
+      "properties": {
+        "name": "Collège Jean Jaurès",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 195618254,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8960605,
+          50.9469084
+        ]
+      },
+      "properties": {
+        "name": "Groupe scolaire Saint-Exupéry",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 221197389,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8375443,
+          50.9557808
+        ]
+      },
+      "properties": {
+        "name": "Lycée général et technologique Pierre de Coubertin",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 266407885,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8869818,
+          50.9543806
+        ]
+      },
+      "properties": {
+        "name": "Collège Martin Luther King",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 369637865,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8917616,
+          50.9407281
+        ]
+      },
+      "properties": {
+        "name": "Centre hospitalier de Calais",
+        "amenity": "hospital",
+        "osm_type": "way",
+        "osm_id": 584255611,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8539592,
+          50.9576667
+        ]
+      },
+      "properties": {
+        "name": "Collège Jean Macé",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 607712456,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8588508,
+          50.933504
+        ]
+      },
+      "properties": {
+        "name": "École primaire Pauline Kergomard",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 608373348,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8955279,
+          50.9425382
+        ]
+      },
+      "properties": {
+        "name": "Clinique du Virval",
+        "amenity": "hospital",
+        "osm_type": "way",
+        "osm_id": 758250023,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8952472,
+          50.9526417
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Youri Gagarine",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 758507548,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8968133,
+          50.9537754
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Mouchotte",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 758507577,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8976112,
+          50.9539725
+        ]
+      },
+      "properties": {
+        "name": "École élémentaire René Mouchotte",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 758507578,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8934375,
+          50.9554687
+        ]
+      },
+      "properties": {
+        "name": "Lycée polyvalent Léonard de Vinci",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 758527686,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.880399,
+          50.9538767
+        ]
+      },
+      "properties": {
+        "name": "Université du Littoral Côte d'Opale - Centre Universitaire de la Mi-Voix",
+        "amenity": "college",
+        "osm_type": "way",
+        "osm_id": 758527695,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8739656,
+          50.9383114
+        ]
+      },
+      "properties": {
+        "name": "Lycée professionnel du Détroit",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 760637185,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8961653,
+          50.9413952
+        ]
+      },
+      "properties": {
+        "name": "Clinique des Oyats",
+        "amenity": "hospital",
+        "osm_type": "way",
+        "osm_id": 761347027,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8792397,
+          50.9512698
+        ]
+      },
+      "properties": {
+        "name": "Collège Lucien Vadez",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 761853215,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8295685,
+          50.9477095
+        ]
+      },
+      "properties": {
+        "name": "École élémentaire Oran-Constantine",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 762110909,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8330105,
+          50.9484411
+        ]
+      },
+      "properties": {
+        "name": "Collège Vauban",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 762110915,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8370298,
+          50.9529395
+        ]
+      },
+      "properties": {
+        "name": "Pharmacie de la Mer",
+        "amenity": "pharmacy",
+        "osm_type": "way",
+        "osm_id": 764311233,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8799568,
+          50.9501475
+        ]
+      },
+      "properties": {
+        "name": "École primaire Robert Allemand",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 952337888,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.901532,
+          50.9547552
+        ]
+      },
+      "properties": {
+        "name": "Lycée professionnel Normandie Niemen",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010241407,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.9029528,
+          50.9484389
+        ]
+      },
+      "properties": {
+        "name": "École primaire Georges Andrique",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010247409,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8896982,
+          50.9456493
+        ]
+      },
+      "properties": {
+        "name": "École primaire Beau-Marais-Castre",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010250473,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.888325,
+          50.9483594
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Jean-Fancois Millet",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010273427,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8900762,
+          50.9486329
+        ]
+      },
+      "properties": {
+        "name": "École primaire Greuze",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010273428,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8952078,
+          50.945713
+        ]
+      },
+      "properties": {
+        "name": "École primaire privée Saint-Vincent- Saint-Charles",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010741631,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8909693,
+          50.9581756
+        ]
+      },
+      "properties": {
+        "name": "École primaire Antoine Parmentier",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010753578,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8747657,
+          50.9601828
+        ]
+      },
+      "properties": {
+        "name": "Établissement régional d'enseignement adapté Côte d'Opale",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010775621,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.870644,
+          50.9557592
+        ]
+      },
+      "properties": {
+        "name": "École élémentaire Chateaubriand",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010928027,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8709771,
+          50.955055
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Zola",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010928028,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.869528,
+          50.9518122
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Courtebourne",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010946901,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8670415,
+          50.947131
+        ]
+      },
+      "properties": {
+        "name": "École primaire Delaroche",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010946906,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.867114,
+          50.9478302
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Van Dyck",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010946907,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8738555,
+          50.9453995
+        ]
+      },
+      "properties": {
+        "name": "École primaire Honoré de Balzac-Nouvelle France",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010946910,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8759274,
+          50.9418019
+        ]
+      },
+      "properties": {
+        "name": "École maternelle François de Malherbe",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010946911,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8772494,
+          50.9416377
+        ]
+      },
+      "properties": {
+        "name": "École élémentaire Jean de La Fontaine",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010946912,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.861392,
+          50.946253
+        ]
+      },
+      "properties": {
+        "name": "Écoles Louise Pollet-La Fayette",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010958503,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8559655,
+          50.9493939
+        ]
+      },
+      "properties": {
+        "name": "Collège République",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010958508,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8578535,
+          50.9452407
+        ]
+      },
+      "properties": {
+        "name": "Lycée général et technologique Saint-Pierre",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010967405,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8551486,
+          50.943663
+        ]
+      },
+      "properties": {
+        "name": "Lycée professionnel privé Saint-Pierre",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1010971588,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.848397,
+          50.944542
+        ]
+      },
+      "properties": {
+        "name": "École primaire Franklin-Stephenson",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011051036,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8527607,
+          50.9435929
+        ]
+      },
+      "properties": {
+        "name": "Institution Jeanne-d'Arc",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011053821,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.855537,
+          50.9427935
+        ]
+      },
+      "properties": {
+        "name": "École primaire Washington",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011056578,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8585207,
+          50.9417885
+        ]
+      },
+      "properties": {
+        "name": "Collège Les Dentelliers",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011056579,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8604105,
+          50.940679
+        ]
+      },
+      "properties": {
+        "name": "École primaire Archimède",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011066756,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.842616,
+          50.9436823
+        ]
+      },
+      "properties": {
+        "name": "École élémentaire Condé",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011069295,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8396785,
+          50.9443201
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Les Cailloux",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011069497,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8348637,
+          50.9473562
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Lesieur",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011078828,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8300536,
+          50.9490303
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Constantine",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011081778,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.823353,
+          50.9470087
+        ]
+      },
+      "properties": {
+        "name": "École primaire Porte de Paris",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011092253,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.857546,
+          50.9443075
+        ]
+      },
+      "properties": {
+        "name": "École primaire privée Sainte-Agnès",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011229941,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8469435,
+          50.9556889
+        ]
+      },
+      "properties": {
+        "name": "École primaire de L'Esplanade",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011448199,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.852801,
+          50.9596445
+        ]
+      },
+      "properties": {
+        "name": "École primaire privée Notre-Dame",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011449600,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8549156,
+          50.9342077
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Pauline Kergomard",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011476715,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8578233,
+          50.9321844
+        ]
+      },
+      "properties": {
+        "name": "École primaire privée Sainte-Germaine",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011479952,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.879833,
+          50.9408186
+        ]
+      },
+      "properties": {
+        "name": "École primaire Virval",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011484164,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.8538645,
+          50.9609643
+        ]
+      },
+      "properties": {
+        "name": "École primaire Condorcet-Phare",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011512880,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.847492,
+          50.9475655
+        ]
+      },
+      "properties": {
+        "name": "École primaire Sévigné-Vauxhall",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011514634,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.846513,
+          50.9476935
+        ]
+      },
+      "properties": {
+        "name": "École primaire privée Sacré-Coeur",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1011522078,
+        "source": "OpenStreetMap contributors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.885641,
+          50.9506444
+        ]
+      },
+      "properties": {
+        "name": "École maternelle Renée Langlet",
+        "amenity": "school",
+        "osm_type": "way",
+        "osm_id": 1432480297,
+        "source": "OpenStreetMap contributors"
+      }
+    }
+  ]
+}
