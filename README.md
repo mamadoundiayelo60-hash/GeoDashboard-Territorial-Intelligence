@@ -14,8 +14,8 @@ chargés d'études. Elle ne cherche pas à reproduire QGIS dans un navigateur : 
 organise les traitements géographiques autour d'une question métier et compare une
 situation de référence à un scénario d'aménagement.
 
-> **Démo publique v2 :** le lien sera ajouté après la création du service Render depuis
-> [`render.yaml`](render.yaml). L'ancienne preuve de concept Streamlit reste consultable
+> **[Tester la démo publique v2](https://geodashboard-studio.onrender.com/)** — déployée
+> sur Render depuis [`render.yaml`](render.yaml). L'ancienne preuve de concept Streamlit reste consultable
 > sur [geodashboard-sig.streamlit.app](https://geodashboard-sig.streamlit.app/).
 
 ![Interface GeoDashboard](docs/assets/workspace-preview.svg)

@@ -22,6 +22,6 @@ Le mode démo utilise 103 équipements ouverts de Calais issus d'OpenStreetMap.
 
 GitHub : https://github.com/mamadoundiayelo60-hash/GeoDashboard-Territorial-Intelligence
 
-Démo : à ajouter après le premier déploiement Render.
+Démo : https://geodashboard-studio.onrender.com/
 
 #geomatique #SIG #GIS #Python #PostGIS #React #DataEngineering #OpenData
