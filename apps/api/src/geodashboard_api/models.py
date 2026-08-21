@@ -208,3 +208,16 @@ class ReportRequest(BaseModel):
     include_details: bool = True
     include_methodology: bool = True
     include_sources: bool = True
+
+
+class DecisionReportRequest(BaseModel):
+    """Scénario TerriScope sérialisé dans une note décisionnelle PDF."""
+
+    title: str = Field(default="Étude d'implantation d'un service de santé", max_length=140)
+    territory: ReportTerritory
+    territory_geometry: dict[str, Any]
+    decision: DecisionResult
+    mode: str = Field(pattern=r"^(pedestrian|bicycle|car)$")
+    threshold_minutes: int = Field(ge=5, le=30)
+    weights: DecisionWeights
+    author: str = Field(default="Mamadou Ndiaye LO", min_length=1, max_length=120)
