@@ -121,7 +121,7 @@ def analyze_sites(
     custom_facilities: gpd.GeoDataFrame | None = None,
 ) -> DecisionResult:
     """Classe des sites candidats à partir d'une maille de demande reproductible."""
-    if request.territory_code != "62193":
+    if request.territory_code != "62193" and custom_facilities is None:
         raise ValueError(
             "Le diagnostic décisionnel est actuellement disponible pour le territoire "
             "pilote de Calais (62193). Les autres communes peuvent être explorées, mais "
@@ -135,7 +135,9 @@ def analyze_sites(
     territory = territory_series.to_crs(metric_crs).iloc[0]
 
     water_exclusion = None
-    uses_water_mask = bool(water_mask_path and water_mask_path.exists())
+    uses_water_mask = bool(
+        request.territory_code == "62193" and water_mask_path and water_mask_path.exists()
+    )
     if uses_water_mask and water_mask_path:
         water = gpd.read_file(water_mask_path, engine="pyogrio").to_crs(metric_crs)
         if not water.empty:
@@ -187,7 +189,7 @@ def analyze_sites(
                     }
                 )
     else:
-        proxies = all_facilities.to_crs(metric_crs).geometry.tolist()
+        proxies = facilities.geometry.tolist()
         minx, miny, maxx, maxy = territory.bounds
         raw_weights: list[float] = []
         spacing = 450.0
@@ -237,7 +239,11 @@ def analyze_sites(
         for item in cells
         if water_exclusion is None or not water_exclusion.covers(item["center"])
     ]
-    uses_parcels = bool(eligible_parcels_path and eligible_parcels_path.exists())
+    uses_parcels = bool(
+        request.territory_code == "62193"
+        and eligible_parcels_path
+        and eligible_parcels_path.exists()
+    )
     eligible_sites = eligible_cells
     if uses_parcels and eligible_parcels_path:
         parcels = gpd.read_file(eligible_parcels_path, engine="pyogrio").to_crs(metric_crs)
