@@ -313,3 +313,7 @@ button { font: inherit; }
   .topbar nav button { padding-inline: 8px; }
 }
 
+/* V3 — espaces de travail et thématiques */
+.v2-header nav button{height:100%;padding:0;border:0;color:#7f8aa6;background:transparent;font-size:12px;font-weight:700;cursor:pointer}.v2-header nav button.active{color:#fff;border-bottom:2px solid #6cf3c5}
+.theme-switch{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.theme-switch button{padding:9px 5px;border:1px solid #303b58;border-radius:8px;color:#a9b4ce;background:#0b1428;cursor:pointer}.theme-switch button.active{border-color:#6cf3c5;color:#07101e;background:#6cf3c5;font-weight:850}
+.workspace-summary{display:grid;gap:13px}.workspace-summary>b,.no-gain>b{color:#ffd166;font-size:9px;letter-spacing:.13em}.workspace-summary>strong,.no-gain>strong{font-size:21px}.workspace-summary article{display:flex;justify-content:space-between;align-items:center;padding:15px;border:1px solid #293653;border-radius:11px;background:#101a31}.workspace-summary article span{color:#9ca9c5;font-size:11px}.workspace-summary article strong{color:#6cf3c5;font-size:17px}.workspace-summary p,.no-gain p{color:#aab5ce;font-size:12px;line-height:1.55}.no-gain{display:grid;gap:12px;padding:20px;border:1px solid #ffd166;border-radius:14px;background:rgba(255,209,102,.08)}
