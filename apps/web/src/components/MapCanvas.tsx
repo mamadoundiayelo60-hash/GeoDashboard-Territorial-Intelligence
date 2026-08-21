@@ -8,6 +8,11 @@ import { layerColor } from "../utils/layerColors";
 
 const territorySource = "active-territory";
 
+function whenStyleReady(currentMap: MapLibreMap, update: () => void) {
+  if (currentMap.isStyleLoaded()) update();
+  else currentMap.once("style.load", update);
+}
+
 type Props = { territory: TerritoryProfile | null; layers: LayerSummary[]; visibleIds: Set<string>; diagnostic: CoverageResult | null; scenarioLocations: ScenarioLocation[]; placingScenario: boolean; onScenarioMapClick: (location: ScenarioLocation) => void };
 
 export function MapCanvas({ territory, layers, visibleIds, diagnostic, scenarioLocations, placingScenario, onScenarioMapClick }: Props) {
@@ -50,7 +55,7 @@ export function MapCanvas({ territory, layers, visibleIds, diagnostic, scenarioL
       const [west, south, east, north] = territory.bbox;
       currentMap.fitBounds([[west, south], [east, north]], { padding: 70, duration: 1200 });
     };
-    if (currentMap.loaded()) update(); else currentMap.once("load", update);
+    whenStyleReady(currentMap, update);
   }, [territory]);
   useEffect(() => {
     const currentMap = map.current;
@@ -70,12 +75,20 @@ export function MapCanvas({ territory, layers, visibleIds, diagnostic, scenarioL
       layers.forEach((layer, index) => {
       const sourceId = `user-${layer.id}`;
       const color = layerColor(index);
-      const source = currentMap.getSource(sourceId) as GeoJSONSource | undefined;
-      if (!source && layer.preview) {
+      let source = currentMap.getSource(sourceId) as GeoJSONSource | undefined;
+      if (!layer.preview) return;
+      if (!source) {
         renderedLayerIds.current.add(layer.id);
         currentMap.addSource(sourceId, { type: "geojson", data: layer.preview });
+        source = currentMap.getSource(sourceId) as GeoJSONSource;
+      } else source.setData(layer.preview);
+      if (!currentMap.getLayer(`${sourceId}-fill`)) {
         currentMap.addLayer({ id: `${sourceId}-fill`, type: "fill", source: sourceId, filter: ["==", ["geometry-type"], "Polygon"], paint: { "fill-color": color, "fill-opacity": 0.32 } });
+      }
+      if (!currentMap.getLayer(`${sourceId}-line`)) {
         currentMap.addLayer({ id: `${sourceId}-line`, type: "line", source: sourceId, filter: ["in", ["geometry-type"], ["literal", ["LineString", "Polygon"]]], paint: { "line-color": color, "line-width": 2.5 } });
+      }
+      if (!currentMap.getLayer(`${sourceId}-point`)) {
         currentMap.addLayer({ id: `${sourceId}-point`, type: "circle", source: sourceId, filter: ["==", ["geometry-type"], "Point"], paint: { "circle-color": color, "circle-radius": 6, "circle-stroke-color": "#ffffff", "circle-stroke-width": 1.5 } });
       }
       for (const suffix of ["fill", "line", "point"]) {
@@ -84,7 +97,7 @@ export function MapCanvas({ territory, layers, visibleIds, diagnostic, scenarioL
       }
       });
     };
-    if (currentMap.loaded()) updateLayers(); else currentMap.once("load", updateLayers);
+    whenStyleReady(currentMap, updateLayers);
   }, [layers, visibleIds]);
   useEffect(() => {
     const currentMap = map.current;
@@ -109,7 +122,7 @@ export function MapCanvas({ territory, layers, visibleIds, diagnostic, scenarioL
       }
       if (currentMap.getLayer("scenario-sites")) currentMap.moveLayer("scenario-sites");
     };
-    if (currentMap.loaded()) update(); else currentMap.once("load", update);
+    whenStyleReady(currentMap, update);
   }, [diagnostic, scenarioLocations]);
   return <div ref={container} className="map-canvas" />;
 }
