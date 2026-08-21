@@ -59,6 +59,46 @@ class ScenarioLocation(BaseModel):
     latitude: float = Field(ge=-90, le=90)
 
 
+class DecisionWeights(BaseModel):
+    """Pondérations explicites d'un classement de sites."""
+
+    population: float = Field(default=0.45, ge=0, le=1)
+    vulnerability: float = Field(default=0.35, ge=0, le=1)
+    equity: float = Field(default=0.20, ge=0, le=1)
+
+
+class DecisionRequest(BaseModel):
+    """Paramètres d'une étude d'implantation territoriale."""
+
+    territory_geometry: dict[str, Any]
+    territory_name: str = Field(min_length=1, max_length=120)
+    territory_code: str = Field(pattern=r"^[0-9A-Z]{5}$")
+    population: int = Field(ge=1)
+    mode: str = Field(default="pedestrian", pattern=r"^(pedestrian|bicycle|car)$")
+    threshold_minutes: int = Field(default=15, ge=5, le=30)
+    weights: DecisionWeights = Field(default_factory=DecisionWeights)
+
+
+class DecisionResult(BaseModel):
+    """Diagnostic d'accessibilité et classement multicritère cartographiable."""
+
+    method: str
+    data_status: str
+    current_access_rate: float
+    scenario_access_rate: float
+    gained_people: int
+    underserved_people: int
+    equity_gain: float
+    facilities: dict[str, Any]
+    demand_grid: dict[str, Any]
+    candidates: dict[str, Any]
+    current_service_area: dict[str, Any]
+    scenario_service_area: dict[str, Any]
+    recommendation: dict[str, Any]
+    sources: list[dict[str, str]]
+    limitations: list[str]
+
+
 class CoverageRequest(BaseModel):
     """Paramètres bornés d'un diagnostic de couverture géométrique."""
 

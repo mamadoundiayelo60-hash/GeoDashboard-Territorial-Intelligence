@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from geodashboard_api.config import get_settings
 from geodashboard_api.middleware import security_headers
+from geodashboard_api.routers.decisions import router as decisions_router
 from geodashboard_api.routers.diagnostics import router as diagnostics_router
 from geodashboard_api.routers.expert import router as expert_router
 from geodashboard_api.routers.health import router as health_router
@@ -33,6 +34,7 @@ def create_app() -> FastAPI:
     app.middleware("http")(security_headers)
     app.include_router(health_router, prefix="/api/v1")
     app.include_router(diagnostics_router, prefix="/api/v1")
+    app.include_router(decisions_router, prefix="/api/v1")
     app.include_router(expert_router, prefix="/api/v1")
     app.include_router(restitution_router, prefix="/api/v1")
     app.include_router(layers_router, prefix="/api/v1")
