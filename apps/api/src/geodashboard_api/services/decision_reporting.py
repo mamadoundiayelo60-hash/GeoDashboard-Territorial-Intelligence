@@ -1,5 +1,6 @@
 """Rapport PDF professionnel du moteur de décision TerriScope."""
 
+from datetime import date
 from io import BytesIO
 from typing import Any
 
@@ -53,7 +54,8 @@ def build_decision_report(request: DecisionReportRequest) -> bytes:
         Paragraph(request.title, styles["title"]),
         Paragraph(
             f"{request.territory.name} - INSEE {request.territory.code} - "
-            f"seuil {request.threshold_minutes} min - mode {_mode(request.mode)}",
+            f"seuil {request.threshold_minutes} min - mode {_mode(request.mode)} - "
+            f"généré le {date.today().strftime('%d/%m/%Y')}",
             styles["subtitle"],
         ),
         Spacer(1, 5 * mm),
@@ -161,9 +163,8 @@ def _recommendation(request: DecisionReportRequest, styles: dict[str, ParagraphS
     parcel = rec.get("parcel_id") or "Non renseignée"
     area = _number(rec.get("parcel_area_m2"))
     zone = rec.get("planning_zone") or "A confirmer"
-    content = (
-        f"<b>Parcelle {parcel}</b> - {area} m2 - zonage {zone}<br/>{rec.get('explanation', '')}"
-    )
+    explanation = str(rec.get("explanation", "")).replace("Le site A", "La parcelle A")
+    content = f"<b>Parcelle {parcel}</b> - {area} m² - zonage {zone}<br/>{explanation}"
     table = Table(
         [[Paragraph("RECOMMANDATION N°1", styles["white"]), Paragraph(content, styles["white"])]],
         colWidths=[45 * mm, None],
@@ -190,7 +191,7 @@ def _candidates(request: DecisionReportRequest) -> Table:
             [
                 prop.get("rank"),
                 prop.get("parcel_id") or "-",
-                f"{_number(prop.get('parcel_area_m2'))} m2",
+                f"{_number(prop.get('parcel_area_m2'))} m²",
                 prop.get("zone_label") or "-",
                 f"{prop.get('score', 0)}/100",
                 f"+ {_number(prop.get('gained_people'))}",
@@ -277,6 +278,8 @@ class DecisionMaps(Flowable):
             self.canv.setFillColor(INK)
             self.canv.setFont("Helvetica-Bold", 8)
             self.canv.drawString(x + 7, self.height - 13, label)
+            self.canv.setFont("Helvetica-Bold", 6)
+            self.canv.drawRightString(x + panel_width - 9, self.height - 13, "N ↑")
             _draw(
                 self.canv,
                 territory,
@@ -299,6 +302,21 @@ class DecisionMaps(Flowable):
                 color,
                 color,
             )
+            _draw_label(
+                self.canv,
+                self.request.territory.name,
+                territory.centroid,
+                territory.bounds,
+                x + 7,
+                7,
+                panel_width - 14,
+                self.height - 25,
+            )
+            self.canv.setFillColor(color)
+            self.canv.rect(x + 10, 10, 5, 5, fill=1, stroke=0)
+            self.canv.setFillColor(INK)
+            self.canv.setFont("Helvetica", 5.5)
+            self.canv.drawString(x + 18, 10.5, "Population accessible")
             if index == 1:
                 candidates = self.request.decision.candidates.get("features", [])
                 for feature in candidates[:3]:
@@ -364,6 +382,29 @@ def _draw(
         canvas.drawPath(path, fill=1, stroke=1)
 
 
+def _draw_label(
+    canvas: Any,
+    text: str,
+    point: Point,
+    bounds: tuple[float, float, float, float],
+    x: float,
+    y: float,
+    width: float,
+    height: float,
+) -> None:
+    min_x, min_y, max_x, max_y = bounds
+    scale = min(width / max(max_x - min_x, 1e-9), height / max(max_y - min_y, 1e-9))
+    ox = x + (width - (max_x - min_x) * scale) / 2
+    oy = y + (height - (max_y - min_y) * scale) / 2
+    canvas.setFillColor(colors.HexColor("#3D4A5F"))
+    canvas.setFont("Helvetica-Bold", 6)
+    canvas.drawCentredString(
+        ox + (point.x - min_x) * scale,
+        oy + (point.y - min_y) * scale,
+        text,
+    )
+
+
 def _chrome(canvas: Any, doc: BaseDocTemplate) -> None:
     canvas.saveState()
     width, height = doc.pagesize
@@ -379,7 +420,7 @@ def _chrome(canvas: Any, doc: BaseDocTemplate) -> None:
     canvas.drawString(
         16 * mm,
         7 * mm,
-        "Préqualification automatique - validation réglementaire et foncière requise",
+        f"Préqualification automatique - validation requise - {date.today():%d/%m/%Y}",
     )
     canvas.drawRightString(width - 16 * mm, 7 * mm, f"Page {doc.page}")
     canvas.restoreState()
