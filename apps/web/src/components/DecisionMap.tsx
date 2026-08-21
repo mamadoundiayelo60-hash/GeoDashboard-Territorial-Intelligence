@@ -130,14 +130,17 @@ export function DecisionMap({ territory, result, comparison, visibility }: Props
       let content: HTMLElement;
       if (feature.layer.id === "candidates") {
         content = popupContent(
-          `Site candidat ${String.fromCharCode(64 + Number(properties.rank))}`,
+          `Parcelle candidate ${String.fromCharCode(64 + Number(properties.rank))}`,
           [
             ["Rang", properties.rank],
             ["Score relatif", `${properties.score}/100`],
             ["Habitants supplémentaires", Number(properties.gained_people).toLocaleString("fr-FR")],
             ["Population vulnérable", Number(properties.vulnerable_people).toLocaleString("fr-FR")],
+            ["Identifiant cadastral", properties.parcel_id],
+            ["Superficie", `${Number(properties.parcel_area_m2).toLocaleString("fr-FR")} m²`],
+            ["Zonage GPU", `${properties.zone_type} · ${properties.zone_label}`],
           ],
-          "Moteur multicritère TerriScope",
+          "Moteur TerriScope · Cadastre Etalab · GPU",
         );
       } else if (feature.layer.id === "facilities") {
         content = popupContent(
@@ -181,4 +184,3 @@ export function DecisionMap({ territory, result, comparison, visibility }: Props
   useEffect(() => { if (map.current?.getLayer("scenarioArea")) map.current.setPaintProperty("scenarioArea", "fill-opacity", comparison / 100 * 0.22); }, [comparison]);
   return <div className="decision-map" ref={container} />;
 }
-
