@@ -85,6 +85,12 @@ def analyze_sites(request: DecisionRequest, demo_path: Path) -> DecisionResult:
         key=lambda item: item["population"] * (1 + item["vulnerability"] / 100),
         reverse=True,
     )[:18]
+    if not eligible:
+        eligible = sorted(
+            cells,
+            key=lambda item: item["population"] * (1 + item["vulnerability"] / 100),
+            reverse=True,
+        )[:5]
     scored: list[dict[str, Any]] = []
     max_gain = 1
     for item in eligible:
