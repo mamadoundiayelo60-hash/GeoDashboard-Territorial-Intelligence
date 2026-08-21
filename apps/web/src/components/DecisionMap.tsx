@@ -118,31 +118,64 @@ export function DecisionMap({ territory, result, comparison, visibility }: Props
 
   useEffect(() => {
     const current = map.current;
-    if (!current) return;
-    const install = () => {
-      const showFacility = (event: maplibregl.MapLayerMouseEvent) => {
-        const feature = event.features?.[0]; if (!feature) return;
-        const properties = feature.properties ?? {};
-        new maplibregl.Popup({ closeButton: true, maxWidth: "300px" }).setLngLat(event.lngLat).setDOMContent(popupContent(properties.name || "Équipement de santé", [["Catégorie", properties.amenity], ["Identifiant OSM", properties.osm_id]], properties.source || "OpenStreetMap")).addTo(current);
-      };
-      const showCandidate = (event: maplibregl.MapLayerMouseEvent) => {
-        const properties = event.features?.[0]?.properties; if (!properties) return;
-        new maplibregl.Popup({ closeButton: true, maxWidth: "300px" }).setLngLat(event.lngLat).setDOMContent(popupContent(`Site candidat ${String.fromCharCode(64 + Number(properties.rank))}`, [["Rang", properties.rank], ["Score relatif", `${properties.score}/100`], ["Habitants supplémentaires", Number(properties.gained_people).toLocaleString("fr-FR")], ["Population vulnérable", Number(properties.vulnerable_people).toLocaleString("fr-FR")]], "Moteur multicritère TerriScope")).addTo(current);
-      };
-      const showGrid = (event: maplibregl.MapLayerMouseEvent) => {
-        const properties = event.features?.[0]?.properties; if (!properties) return;
-        new maplibregl.Popup({ closeButton: true, maxWidth: "300px" }).setLngLat(event.lngLat).setDOMContent(popupContent("Maille de demande", [["Population estimée", Number(properties.population).toLocaleString("fr-FR")], ["Vulnérabilité", `${properties.vulnerability}/100`], ["Accessibilité actuelle", properties.served ? "Desservie" : "Non desservie"]], "Modèle de démonstration — future maille INSEE Filosofi")).addTo(current);
-      };
-      current.on("click", "facilities", showFacility);
-      current.on("click", "candidates", showCandidate);
-      current.on("click", "grid", showGrid);
-      for (const layer of ["facilities", "candidates", "grid"]) {
-        current.on("mouseenter", layer, () => { current.getCanvas().style.cursor = "pointer"; });
-        current.on("mouseleave", layer, () => { current.getCanvas().style.cursor = ""; });
+    if (!current || !result || !current.getLayer("grid")) return;
+
+    const interactiveLayers = ["candidates", "facilities", "grid"].filter((id) => current.getLayer(id));
+
+    const onMapClick = (event: maplibregl.MapMouseEvent) => {
+      const feature = current.queryRenderedFeatures(event.point, { layers: interactiveLayers })[0];
+      if (!feature) return;
+
+      const properties = feature.properties ?? {};
+      let content: HTMLElement;
+      if (feature.layer.id === "candidates") {
+        content = popupContent(
+          `Site candidat ${String.fromCharCode(64 + Number(properties.rank))}`,
+          [
+            ["Rang", properties.rank],
+            ["Score relatif", `${properties.score}/100`],
+            ["Habitants supplémentaires", Number(properties.gained_people).toLocaleString("fr-FR")],
+            ["Population vulnérable", Number(properties.vulnerable_people).toLocaleString("fr-FR")],
+          ],
+          "Moteur multicritère TerriScope",
+        );
+      } else if (feature.layer.id === "facilities") {
+        content = popupContent(
+          properties.name || "Équipement de santé",
+          [["Catégorie", properties.amenity], ["Identifiant OSM", properties.osm_id]],
+          properties.source || "OpenStreetMap",
+        );
+      } else {
+        content = popupContent(
+          "Maille de demande",
+          [
+            ["Population estimée", Number(properties.population).toLocaleString("fr-FR")],
+            ["Vulnérabilité", `${properties.vulnerability}/100`],
+            ["Accessibilité actuelle", properties.served ? "Desservie" : "Non desservie"],
+          ],
+          "Modèle de démonstration — future maille INSEE Filosofi",
+        );
       }
+
+      new maplibregl.Popup({ closeButton: true, maxWidth: "300px" })
+        .setLngLat(event.lngLat)
+        .setDOMContent(content)
+        .addTo(current);
     };
-    if (current.isStyleLoaded()) install(); else current.once("style.load", install);
-  }, []);
+
+    const onMouseMove = (event: maplibregl.MapMouseEvent) => {
+      const hovered = current.queryRenderedFeatures(event.point, { layers: interactiveLayers }).length > 0;
+      current.getCanvas().style.cursor = hovered ? "pointer" : "";
+    };
+
+    current.on("click", onMapClick);
+    current.on("mousemove", onMouseMove);
+    return () => {
+      current.off("click", onMapClick);
+      current.off("mousemove", onMouseMove);
+      current.getCanvas().style.cursor = "";
+    };
+  }, [result]);
 
   useEffect(() => { if (map.current?.getLayer("scenarioArea")) map.current.setPaintProperty("scenarioArea", "fill-opacity", comparison / 100 * 0.22); }, [comparison]);
   return <div className="decision-map" ref={container} />;
