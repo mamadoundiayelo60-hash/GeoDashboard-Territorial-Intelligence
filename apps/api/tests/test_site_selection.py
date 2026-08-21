@@ -156,6 +156,35 @@ def test_site_selection_rejects_unprepared_territory() -> None:
         analyze_sites(request, demo)
 
 
+def test_site_selection_opens_another_city_with_imported_facilities() -> None:
+    territory = Polygon([(2.25, 48.82), (2.42, 48.82), (2.42, 48.90), (2.25, 48.90)])
+    imported = gpd.GeoDataFrame(
+        {"name": [f"Équipement {index}" for index in range(8)]},
+        geometry=gpd.points_from_xy(
+            [2.28 + index * 0.015 for index in range(8)],
+            [48.84 + (index % 3) * 0.015 for index in range(8)],
+        ),
+        crs=4326,
+    )
+    request = DecisionRequest(
+        territory_geometry=mapping(territory),
+        territory_name="Paris",
+        territory_code="75056",
+        population=2_100_000,
+        theme="health",
+    )
+
+    result = analyze_sites(
+        request,
+        Path(__file__).parents[3] / "data/demo/calais-facilities-osm.geojson",
+        custom_facilities=imported,
+    )
+
+    assert len(result.facilities["features"]) == 8
+    assert "répartition infracommunale modélisée" in result.data_status
+    assert result.candidates["features"]
+
+
 def test_candidates_are_outside_hydrographic_exclusion() -> None:
     territory = Polygon([(1.72, 50.88), (2.02, 50.88), (2.02, 51.02), (1.72, 51.02)])
     request = DecisionRequest(
