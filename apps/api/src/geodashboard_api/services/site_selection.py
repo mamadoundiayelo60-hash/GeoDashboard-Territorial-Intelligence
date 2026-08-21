@@ -24,7 +24,11 @@ def _web(geometry: Any, crs: Any) -> dict[str, Any]:
     return mapping(projected)
 
 
-def analyze_sites(request: DecisionRequest, demo_path: Path) -> DecisionResult:
+def analyze_sites(
+    request: DecisionRequest,
+    demo_path: Path,
+    filosofi_path: Path | None = None,
+) -> DecisionResult:
     """Classe des sites candidats à partir d'une maille de demande reproductible."""
     territory_wgs = shape(request.territory_geometry)
     territory_series = gpd.GeoSeries([territory_wgs], crs=4326)
@@ -39,45 +43,65 @@ def analyze_sites(request: DecisionRequest, demo_path: Path) -> DecisionResult:
     if health.empty:
         health = all_facilities.head(8).to_crs(metric_crs)
 
-    proxies = all_facilities.to_crs(metric_crs).geometry.tolist()
-    minx, miny, maxx, maxy = territory.bounds
     cells: list[dict[str, Any]] = []
-    raw_weights: list[float] = []
-    spacing = 450.0
-    y = miny
-    while y < maxy:
-        x = minx
-        while x < maxx:
-            cell = box(x, y, x + spacing, y + spacing).intersection(territory)
-            if not cell.is_empty and cell.area > spacing * spacing * 0.15:
-                center = cell.representative_point()
-                density = 0.15 + sum(exp(-center.distance(point) / 850.0) for point in proxies)
-                raw_weights.append(density * cell.area)
-                cells.append({"geometry": cell, "center": center})
-            x += spacing
-        y += spacing
+    uses_filosofi = bool(
+        request.territory_code == "62193" and filosofi_path and filosofi_path.exists()
+    )
+    if uses_filosofi and filosofi_path:
+        filosofi = gpd.read_file(filosofi_path, engine="pyogrio").to_crs(metric_crs)
+        for feature in filosofi.itertuples():
+            cell = feature.geometry.intersection(territory)
+            if not cell.is_empty:
+                cells.append(
+                    {
+                        "geometry": cell,
+                        "center": cell.representative_point(),
+                        "population": max(0, round(float(feature.population))),
+                        "vulnerability": float(feature.vulnerability),
+                        "imputed": bool(feature.imputed),
+                    }
+                )
+    else:
+        proxies = all_facilities.to_crs(metric_crs).geometry.tolist()
+        minx, miny, maxx, maxy = territory.bounds
+        raw_weights: list[float] = []
+        spacing = 450.0
+        y = miny
+        while y < maxy:
+            x = minx
+            while x < maxx:
+                cell = box(x, y, x + spacing, y + spacing).intersection(territory)
+                if not cell.is_empty and cell.area > spacing * spacing * 0.15:
+                    center = cell.representative_point()
+                    density = 0.15 + sum(exp(-center.distance(point) / 850.0) for point in proxies)
+                    raw_weights.append(density * cell.area)
+                    cells.append({"geometry": cell, "center": center})
+                x += spacing
+            y += spacing
+        total_weight = sum(raw_weights) or 1
+        populations: list[int] = []
+        for item, weight in zip(cells, raw_weights, strict=True):
+            population = max(1, round(request.population * weight / total_weight))
+            populations.append(population)
+            center = item["center"]
+            item["population"] = population
+            item["vulnerability"] = round(
+                35 + 55 * (1 - min(1, center.distance(territory.centroid) / 5000)), 1
+            )
+            item["imputed"] = False
+        delta = request.population - sum(populations)
+        if cells:
+            cells[0]["population"] += delta
 
-    total_weight = sum(raw_weights) or 1
+    analysis_population = sum(item["population"] for item in cells) or request.population
     radius = SPEED_KMH[request.mode] * 1000 * request.threshold_minutes / 60 / 1.28
     facility_points = health.geometry.tolist()
     current_area = territory.intersection(
         unary_union([point.buffer(radius) for point in facility_points])
     )
 
-    populations: list[int] = []
-    for item, weight in zip(cells, raw_weights, strict=True):
-        population = max(1, round(request.population * weight / total_weight))
-        populations.append(population)
-        center = item["center"]
-        item["population"] = population
-        item["vulnerability"] = round(
-            35 + 55 * (1 - min(1, center.distance(territory.centroid) / 5000)), 1
-        )
-        item["served"] = current_area.covers(center)
-
-    delta = request.population - sum(populations)
-    if cells:
-        cells[0]["population"] += delta
+    for item in cells:
+        item["served"] = current_area.covers(item["center"])
     current_people = sum(item["population"] for item in cells if item["served"])
 
     eligible = sorted(
@@ -128,6 +152,7 @@ def analyze_sites(request: DecisionRequest, demo_path: Path) -> DecisionResult:
                     "population": item["population"],
                     "vulnerability": item["vulnerability"],
                     "served": item["served"],
+                    "imputed": item["imputed"],
                 },
             }
         )
@@ -148,7 +173,7 @@ def analyze_sites(request: DecisionRequest, demo_path: Path) -> DecisionResult:
 
     health_wgs = health.to_crs(4326)
     facility_features = json.loads(health_wgs.to_json(drop_id=True))
-    gain_rate = top["gained"] / request.population * 100
+    gain_rate = top["gained"] / analysis_population * 100
     recommendation = {
         "rank": 1,
         "score": round(top["score"], 1),
@@ -163,13 +188,14 @@ def analyze_sites(request: DecisionRequest, demo_path: Path) -> DecisionResult:
     return DecisionResult(
         method="Préqualification multimodale — distance réseau estimée, calibration IGN à venir",
         data_status=(
-            "Démonstrateur transparent : équipements OSM réels, population communale "
-            "officielle, répartition infracommunale modélisée."
+            "Équipements OSM réels et carreaux INSEE Filosofi 2021 réels."
+            if uses_filosofi
+            else "Population communale officielle et répartition infracommunale modélisée."
         ),
-        current_access_rate=round(current_people / request.population * 100, 1),
-        scenario_access_rate=round(scenario_people / request.population * 100, 1),
+        current_access_rate=round(current_people / analysis_population * 100, 1),
+        scenario_access_rate=round(scenario_people / analysis_population * 100, 1),
         gained_people=top["gained"],
-        underserved_people=max(0, request.population - current_people),
+        underserved_people=max(0, analysis_population - current_people),
         equity_gain=round(gain_rate, 1),
         facilities=facility_features,
         demand_grid=_fc(grid_features),
@@ -179,15 +205,29 @@ def analyze_sites(request: DecisionRequest, demo_path: Path) -> DecisionResult:
         recommendation=recommendation,
         sources=[
             {"name": "Population communale", "provider": "API Découpage administratif / INSEE"},
+            *(
+                [
+                    {
+                        "name": "Population et vulnérabilité",
+                        "provider": "INSEE — Filosofi 2021, carreaux de 200 m",
+                    }
+                ]
+                if uses_filosofi
+                else []
+            ),
             {"name": "Équipements de santé", "provider": "OpenStreetMap — ODbL 1.0"},
             {"name": "Réseau cible", "provider": "Géoplateforme IGN — BD TOPO®"},
         ],
         limitations=[
-            "La maille de population est modélisée dans ce démonstrateur et sera "
-            "remplacée par Filosofi 200 m.",
+            *(
+                ["94 carreaux Filosofi de Calais sont imputés conformément au secret statistique."]
+                if uses_filosofi
+                else ["La maille de population est modélisée dans ce démonstrateur."]
+            ),
             "Les temps affichés sont une préqualification ; la V2 finale appellera "
             "les isochrones IGN.",
             "Le classement aide à comparer des sites et ne remplace pas une étude "
             "foncière ou réglementaire.",
         ],
     )
+
