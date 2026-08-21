@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://geodashboard:change-me@localhost/geodashboard"
     geo_api_base_url: str = "https://geo.api.gouv.fr"
     geo_api_timeout_seconds: float = Field(default=8.0, ge=1.0, le=20.0)
+    ign_navigation_base_url: str = "https://data.geopf.fr/navigation"
+    ign_navigation_timeout_seconds: float = Field(default=12.0, ge=2.0, le=30.0)
     runtime_data_dir: Path = Path("data/runtime")
     demo_data_path: Path = Path("data/demo/calais-facilities-osm.geojson")
     max_upload_mb: int = Field(default=50, ge=1, le=100)
@@ -58,8 +60,19 @@ class Settings(BaseSettings):
             raise ValueError("L'hôte de l'API Geo doit être https://geo.api.gouv.fr.")
         return value.rstrip("/")
 
+    @field_validator("ign_navigation_base_url")
+    @classmethod
+    def lock_ign_navigation_host(cls, value: str) -> str:
+        """Verrouille le connecteur sur le service officiel de la Géoplateforme."""
+        if value.rstrip("/") != "https://data.geopf.fr/navigation":
+            raise ValueError(
+                "L'hôte de navigation IGN doit être https://data.geopf.fr/navigation."
+            )
+        return value.rstrip("/")
+
 
 @lru_cache
 def get_settings() -> Settings:
     """Retourne une instance immuable par processus."""
     return Settings()
+
