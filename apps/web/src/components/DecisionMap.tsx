@@ -141,18 +141,23 @@ export function DecisionMap({ territory, result, comparison, visibility, facilit
       const properties = feature.properties ?? {};
       let content: HTMLElement;
       if (feature.layer.id === "candidates") {
-        content = popupContent(
-          `Parcelle candidate ${String.fromCharCode(64 + Number(properties.rank))}`,
-          [
-            ["Rang", properties.rank],
-            ["Score relatif", `${properties.score}/100`],
-            ["Habitants supplémentaires", Number(properties.gained_people).toLocaleString("fr-FR")],
-            ["Population vulnérable", Number(properties.vulnerable_people).toLocaleString("fr-FR")],
+        const parcelRows: Array<[string, unknown]> = [
+          ["Rang", properties.rank],
+          ["Score relatif", `${properties.score}/100`],
+          ["Habitants supplémentaires", Number(properties.gained_people).toLocaleString("fr-FR")],
+          ["Population vulnérable", Number(properties.vulnerable_people).toLocaleString("fr-FR")],
+        ];
+        if (properties.parcel_id) {
+          parcelRows.push(
             ["Identifiant cadastral", properties.parcel_id],
             ["Superficie", `${Number(properties.parcel_area_m2).toLocaleString("fr-FR")} m²`],
             ["Zonage GPU", `${properties.zone_type} · ${properties.zone_label}`],
-          ],
-          "Moteur TerriScope · Cadastre Etalab · GPU",
+          );
+        }
+        content = popupContent(
+          `${properties.parcel_id ? "Parcelle" : "Zone"} candidate ${String.fromCharCode(64 + Number(properties.rank))}`,
+          parcelRows,
+          properties.parcel_id ? "Moteur TerriScope · Cadastre Etalab · GPU" : "Moteur multicritère TerriScope",
         );
       } else if (feature.layer.id === "facilities") {
         content = popupContent(
