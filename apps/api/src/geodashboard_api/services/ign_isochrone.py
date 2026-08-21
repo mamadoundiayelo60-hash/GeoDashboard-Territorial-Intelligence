@@ -28,7 +28,7 @@ class IgnIsochroneClient:
 
     _cache: ClassVar[dict[tuple[float, float, str, int], tuple[float, IgnIsochrone]]] = {}
     _cache_ttl_seconds = 86_400.0
-    _profiles = {"pedestrian", "car"}
+    _profiles: ClassVar[set[str]] = {"pedestrian", "car"}
 
     def __init__(self, client: httpx.AsyncClient) -> None:
         self.client = client
@@ -74,7 +74,9 @@ class IgnIsochroneClient:
             if geometry.is_empty or geometry.geom_type not in {"Polygon", "MultiPolygon"}:
                 raise ValueError("Géométrie d'isochrone invalide.")
         except (httpx.HTTPError, ValueError, TypeError, KeyError) as exc:
-            raise IgnIsochroneError("Le service d'isochrone IGN est temporairement indisponible.") from exc
+            raise IgnIsochroneError(
+                "Le service d'isochrone IGN est temporairement indisponible."
+            ) from exc
 
         result = IgnIsochrone(
             geometry=geometry,
