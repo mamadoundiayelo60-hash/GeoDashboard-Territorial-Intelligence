@@ -10,11 +10,22 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from fastapi.responses import JSONResponse
 
 from geodashboard_api.io.layer_store import LayerStore
-from geodashboard_api.models import ReportRequest
+from geodashboard_api.models import DecisionReportRequest, ReportRequest
 from geodashboard_api.routers.layers import layer_store
+from geodashboard_api.services.decision_reporting import build_decision_report
 from geodashboard_api.services.reporting import build_report
 
 router = APIRouter(prefix="/restitution", tags=["restitution"])
+
+
+@router.post("/decision-reports", response_class=Response)
+def decision_report(request: DecisionReportRequest) -> Response:
+    """Génère la note PDF du scénario d'implantation TerriScope."""
+    return Response(
+        content=build_decision_report(request),
+        media_type="application/pdf",
+        headers={"Content-Disposition": 'attachment; filename="terriscope-decision-report.pdf"'},
+    )
 
 
 @router.post("/reports", response_class=Response)
