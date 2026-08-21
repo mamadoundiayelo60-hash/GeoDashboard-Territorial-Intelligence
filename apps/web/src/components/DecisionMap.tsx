@@ -12,6 +12,7 @@ type Props = {
   result: DecisionResult | null;
   comparison: number;
   visibility: DecisionLayerVisibility;
+  facilityLabel?: string;
 };
 
 function popupContent(title: string, rows: Array<[string, unknown]>, source?: string) {
@@ -37,7 +38,7 @@ function popupContent(title: string, rows: Array<[string, unknown]>, source?: st
   return root;
 }
 
-export function DecisionMap({ territory, result, comparison, visibility }: Props) {
+export function DecisionMap({ territory, result, comparison, visibility, facilityLabel = "Équipement" }: Props) {
   const container = useRef<HTMLDivElement | null>(null);
   const map = useRef<MapLibreMap | null>(null);
 
@@ -144,8 +145,8 @@ export function DecisionMap({ territory, result, comparison, visibility }: Props
         );
       } else if (feature.layer.id === "facilities") {
         content = popupContent(
-          properties.name || "Équipement de santé",
-          [["Catégorie", properties.amenity], ["Identifiant OSM", properties.osm_id]],
+          properties.name || facilityLabel,
+          [["Catégorie", properties.amenity || properties.leisure || properties.tourism], ["Identifiant OSM", properties.osm_id]],
           properties.source || "OpenStreetMap",
         );
       } else {
@@ -179,7 +180,7 @@ export function DecisionMap({ territory, result, comparison, visibility }: Props
       current.off("mousemove", onMouseMove);
       current.getCanvas().style.cursor = "";
     };
-  }, [result]);
+  }, [result, facilityLabel]);
 
   useEffect(() => { if (map.current?.getLayer("scenarioArea")) map.current.setPaintProperty("scenarioArea", "fill-opacity", comparison / 100 * 0.22); }, [comparison]);
   return <div className="decision-map" ref={container} />;
