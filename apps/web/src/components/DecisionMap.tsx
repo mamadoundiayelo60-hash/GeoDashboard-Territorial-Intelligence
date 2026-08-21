@@ -107,14 +107,21 @@ export function DecisionMap({ territory, result, comparison, visibility, facilit
       };
       Object.entries(sources).forEach(([id, data]) => {
         const source = current.getSource(id) as GeoJSONSource | undefined;
-        if (source) source.setData(data); else current.addSource(id, { type: "geojson", data });
+        if (source) source.setData(data);
+        else current.addSource(id, id === "facilities"
+          ? { type: "geojson", data, cluster: true, clusterMaxZoom: 14, clusterRadius: 42 }
+          : { type: "geojson", data });
       });
       if (!current.getLayer("grid")) current.addLayer({ id: "grid", type: "fill", source: "grid", paint: { "fill-color": ["case", ["==", ["get", "served"], false], ["interpolate", ["linear"], ["get", "vulnerability"], 35, "#29335c", 90, "#ff5c7a"], "#193d45"], "fill-opacity": 0.64, "fill-outline-color": "rgba(255,255,255,.06)" } });
       if (!current.getLayer("currentArea")) current.addLayer({ id: "currentArea", type: "line", source: "currentArea", paint: { "line-color": "#55d7cf", "line-width": 2, "line-opacity": 0.8 } });
       if (!current.getLayer("scenarioArea")) current.addLayer({ id: "scenarioArea", type: "fill", source: "scenarioArea", paint: { "fill-color": "#6cf3c5", "fill-opacity": comparison / 100 * 0.18, "fill-outline-color": "#6cf3c5" } });
-      if (!current.getLayer("facilities")) current.addLayer({ id: "facilities", type: "circle", source: "facilities", paint: { "circle-color": "#f8fafc", "circle-radius": 5, "circle-stroke-color": "#17213e", "circle-stroke-width": 2 } });
+      if (!current.getLayer("facilities-clusters")) current.addLayer({ id: "facilities-clusters", type: "circle", source: "facilities", filter: ["has", "point_count"], paint: { "circle-color": ["step", ["get", "point_count"], "#6cf3c5", 50, "#8ca7ff", 250, "#ffd166"], "circle-radius": ["step", ["get", "point_count"], 15, 50, 20, 250, 27], "circle-stroke-color": "#091126", "circle-stroke-width": 2 } });
+      if (!current.getLayer("facilities-count")) current.addLayer({ id: "facilities-count", type: "symbol", source: "facilities", filter: ["has", "point_count"], layout: { "text-field": ["get", "point_count_abbreviated"], "text-size": 11 }, paint: { "text-color": "#07101e" } });
+      if (!current.getLayer("facilities")) current.addLayer({ id: "facilities", type: "circle", source: "facilities", filter: ["!", ["has", "point_count"]], paint: { "circle-color": "#f8fafc", "circle-radius": 5, "circle-stroke-color": "#17213e", "circle-stroke-width": 2 } });
       if (!current.getLayer("candidates")) current.addLayer({ id: "candidates", type: "circle", source: "candidates", paint: { "circle-color": ["case", ["==", ["get", "rank"], 1], "#ffd166", "#8ca7ff"], "circle-radius": ["case", ["==", ["get", "rank"], 1], 11, 7], "circle-stroke-color": "#091126", "circle-stroke-width": 3 } });
       current.moveLayer("facilities");
+      current.moveLayer("facilities-clusters");
+      current.moveLayer("facilities-count");
       current.moveLayer("candidates");
     };
     if (current.isStyleLoaded()) draw(); else current.once("style.load", draw);
@@ -124,7 +131,8 @@ export function DecisionMap({ territory, result, comparison, visibility, facilit
     const current = map.current;
     if (!current) return;
     (Object.entries(visibility) as Array<[DecisionLayerId, boolean]>).forEach(([id, visible]) => {
-      if (current.getLayer(id)) current.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
+      const layerIds = id === "facilities" ? ["facilities", "facilities-clusters", "facilities-count"] : [id];
+      layerIds.forEach((layerId) => { if (current.getLayer(layerId)) current.setLayoutProperty(layerId, "visibility", visible ? "visible" : "none"); });
     });
   }, [visibility, result]);
 
@@ -132,13 +140,18 @@ export function DecisionMap({ territory, result, comparison, visibility, facilit
     const current = map.current;
     if (!current || !result || !current.getLayer("grid")) return;
 
-    const interactiveLayers = ["candidates", "facilities", "grid"].filter((id) => current.getLayer(id));
+    const interactiveLayers = ["candidates", "facilities", "facilities-clusters", "grid"].filter((id) => current.getLayer(id));
 
     const onMapClick = (event: maplibregl.MapMouseEvent) => {
       const feature = current.queryRenderedFeatures(event.point, { layers: interactiveLayers })[0];
       if (!feature) return;
 
       const properties = feature.properties ?? {};
+      if (feature.layer.id === "facilities-clusters") {
+        const source = current.getSource("facilities") as GeoJSONSource;
+        void source.getClusterExpansionZoom(Number(properties.cluster_id)).then((zoom) => current.easeTo({ center: event.lngLat, zoom }));
+        return;
+      }
       let content: HTMLElement;
       if (feature.layer.id === "candidates") {
         const parcelRows: Array<[string, unknown]> = [
