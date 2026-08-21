@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type MouseEvent as ReactMouseEvent } from "react";
 import maplibregl, { type GeoJSONSource, type Map as MapLibreMap } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import type { LayerSummary } from "../api/layers";
@@ -19,8 +19,6 @@ export function MapCanvas({ territory, layers, visibleIds, diagnostic, scenarioL
   const container = useRef<HTMLDivElement | null>(null);
   const map = useRef<MapLibreMap | null>(null);
   const renderedLayerIds = useRef<Set<string>>(new Set());
-  const placingScenarioRef = useRef(placingScenario);
-  const scenarioClickRef = useRef(onScenarioMapClick);
   useEffect(() => {
     if (!container.current || map.current) return;
     const instance = new maplibregl.Map({ container: container.current, center: [2.3, 46.6], zoom: 4.7, attributionControl: false, style: { version: 8, sources: { osm: { type: "raster", tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"], tileSize: 256, attribution: "© OpenStreetMap contributors" } }, layers: [{ id: "osm", type: "raster", source: "osm" }] } });
@@ -28,18 +26,11 @@ export function MapCanvas({ territory, layers, visibleIds, diagnostic, scenarioL
     instance.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-right");
     instance.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left");
     instance.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: "GeoDashboard" }), "bottom-right");
-    const handleScenarioClick = (event: maplibregl.MapMouseEvent) => {
-      if (!placingScenarioRef.current) return;
-      scenarioClickRef.current({ longitude: event.lngLat.lng, latitude: event.lngLat.lat });
-    };
-    instance.on("click", handleScenarioClick);
-    return () => { instance.off("click", handleScenarioClick); instance.remove(); map.current = null; };
+    return () => { instance.remove(); map.current = null; };
   }, []);
   useEffect(() => {
-    placingScenarioRef.current = placingScenario;
-    scenarioClickRef.current = onScenarioMapClick;
     if (map.current) map.current.getCanvas().style.cursor = placingScenario ? "crosshair" : "";
-  }, [placingScenario, onScenarioMapClick]);
+  }, [placingScenario]);
   useEffect(() => {
     const currentMap = map.current;
     if (!currentMap || !territory) return;
@@ -124,5 +115,15 @@ export function MapCanvas({ territory, layers, visibleIds, diagnostic, scenarioL
     };
     whenStyleReady(currentMap, update);
   }, [diagnostic, scenarioLocations]);
-  return <div ref={container} className="map-canvas" />;
+  const placeScenario = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!placingScenario || !map.current) return;
+    if ((event.target as HTMLElement).closest(".maplibregl-control-container")) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const location = map.current.unproject([
+      event.clientX - bounds.left,
+      event.clientY - bounds.top,
+    ]);
+    onScenarioMapClick({ longitude: location.lng, latitude: location.lat });
+  };
+  return <div ref={container} className="map-canvas" onClickCapture={placeScenario} />;
 }
