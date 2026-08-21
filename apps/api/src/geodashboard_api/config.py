@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     runtime_data_dir: Path = Path("data/runtime")
     demo_data_path: Path = Path("data/demo/calais-facilities-osm.geojson")
     filosofi_demo_path: Path = Path("data/demo/calais-filosofi-200m.geojson")
+    water_mask_path: Path = Path("data/demo/calais-water-mask.geojson")
     max_upload_mb: int = Field(default=50, ge=1, le=100)
 
     @field_validator("database_url")
@@ -74,4 +75,3 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Retourne une instance immuable par processus."""
     return Settings()
-
