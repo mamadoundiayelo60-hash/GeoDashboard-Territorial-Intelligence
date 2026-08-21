@@ -110,6 +110,7 @@ export function App() {
     queryFn: () => getTerritory(selected.code),
   });
   const isPilotTerritory = selected.code === "62193";
+  const canAnalyze = isPilotTerritory || equipmentLayer !== null;
   const study = useMutation({
     mutationFn: () =>
       runSiteSelection({
@@ -126,8 +127,8 @@ export function App() {
   });
   useEffect(() => {
     study.reset();
-    if (territory.data && isPilotTerritory) study.mutate();
-  }, [territory.data, isPilotTerritory, theme, equipmentLayer]);
+    if (territory.data && canAnalyze) study.mutate();
+  }, [territory.data, canAnalyze, theme, equipmentLayer]);
   const result = study.isError ? null : (study.data ?? null);
   const topCandidates = useMemo(
     () => result?.candidates.features.slice(0, 3) ?? [],
@@ -253,16 +254,16 @@ export function App() {
           </section>
           <button
             className="primary"
-            disabled={!territory.data || !isPilotTerritory || study.isPending}
+            disabled={!territory.data || !canAnalyze || study.isPending}
             onClick={() => study.mutate()}
           >
             {study.isPending
               ? "Analyse spatiale en cours…"
-              : isPilotTerritory
+              : canAnalyze
                 ? "Recalculer les recommandations"
-                : "Territoire à préparer"}
+                : "Importez une couche pour analyser"}
           </button>
-          {!isPilotTerritory && (
+          {!isPilotTerritory && !equipmentLayer && (
             <small className="territory-notice">
               ● La limite communale peut être explorée. Le diagnostic nécessite
               encore les équipements, la population carroyée et les contraintes
@@ -292,7 +293,7 @@ export function App() {
           >
             ◫ Couches{" "}
             <b>
-              {isPilotTerritory
+              {result
                 ? Object.values(visibility).filter(Boolean).length
                 : 0}
             </b>
@@ -303,7 +304,7 @@ export function App() {
                 <div>
                   <span>CATALOGUE CARTOGRAPHIQUE</span>
                   <strong>
-                    {isPilotTerritory
+                    {result
                       ? "Données de l’étude"
                       : "Socle métier non chargé"}
                   </strong>
@@ -312,9 +313,9 @@ export function App() {
               </header>
               {layerDefinitions.map((layer) => (
                 <button
-                  disabled={!isPilotTerritory}
+                  disabled={!result}
                   className={
-                    isPilotTerritory && visibility[layer.id] ? "visible" : ""
+                    result && visibility[layer.id] ? "visible" : ""
                   }
                   key={layer.id}
                   onClick={() => toggleLayer(layer.id)}
@@ -324,17 +325,17 @@ export function App() {
                     <strong>{layer.label}</strong>
                     <small>{layer.id === "facilities" ? `${themes[theme].label} · OpenStreetMap` : layer.detail}</small>
                   </div>
-                  <b>{isPilotTerritory && visibility[layer.id] ? "ON" : "—"}</b>
+                  <b>{result && visibility[layer.id] ? "ON" : "—"}</b>
                 </button>
               ))}
               <p>
-                {isPilotTerritory
+                {result
                   ? "Cliquez sur un équipement, une maille ou un candidat pour consulter sa fiche."
                   : "La limite communale est disponible. Les couches décisionnelles seront activées après préparation des sources locales."}
               </p>
             </div>
           )}
-          {isPilotTerritory && result?.has_actionable_gain && (
+          {result?.has_actionable_gain && (
             <div className="compare-control">
               <span>Situation actuelle</span>
               <input
