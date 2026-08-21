@@ -51,6 +51,54 @@ THEMES = {
         "leisure": set(),
         "tourism": {"museum", "gallery"},
     },
+    "early_childhood": {
+        "label": "Petite enfance",
+        "amenity": {"kindergarten", "childcare"},
+        "leisure": {"playground"},
+        "tourism": set(),
+    },
+    "social": {
+        "label": "Solidarité et social",
+        "amenity": {"social_facility", "community_centre", "food_bank"},
+        "leisure": set(),
+        "tourism": set(),
+    },
+    "public_services": {
+        "label": "Services publics",
+        "amenity": {"townhall", "post_office", "public_building", "courthouse"},
+        "leisure": set(),
+        "tourism": set(),
+    },
+    "mobility": {
+        "label": "Mobilité",
+        "amenity": {"bus_station", "bicycle_parking", "taxi", "charging_station"},
+        "leisure": set(),
+        "tourism": set(),
+    },
+    "commerce": {
+        "label": "Commerce et proximité",
+        "amenity": {"marketplace", "bank", "restaurant", "cafe"},
+        "leisure": set(),
+        "tourism": set(),
+    },
+    "environment": {
+        "label": "Environnement",
+        "amenity": {"recycling", "waste_disposal", "drinking_water"},
+        "leisure": {"park", "nature_reserve"},
+        "tourism": set(),
+    },
+    "safety": {
+        "label": "Sécurité et secours",
+        "amenity": {"police", "fire_station"},
+        "leisure": set(),
+        "tourism": set(),
+    },
+    "tourism": {
+        "label": "Tourisme et patrimoine",
+        "amenity": {"information"},
+        "leisure": set(),
+        "tourism": {"museum", "gallery", "attraction", "viewpoint", "information"},
+    },
 }
 SPEED_KMH = {"pedestrian": 4.5, "bicycle": 15.0, "car": 35.0}
 
