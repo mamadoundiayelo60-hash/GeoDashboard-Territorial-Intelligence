@@ -21,7 +21,7 @@ async def site_selection(
 ) -> DecisionResult:
     """Produit un diagnostic et cinq sites candidats explicables."""
     try:
-        result = analyze_sites(request, settings.demo_data_path)
+        result = analyze_sites(request, settings.demo_data_path, settings.filosofi_demo_path)
         async with httpx.AsyncClient(
             base_url=settings.ign_navigation_base_url,
             timeout=httpx.Timeout(settings.ign_navigation_timeout_seconds),
