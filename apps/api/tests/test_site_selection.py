@@ -26,3 +26,21 @@ def test_site_selection_returns_ranked_explainable_candidates() -> None:
     assert result.recommendation["rank"] == 1
     assert result.sources
     assert result.limitations
+
+
+def test_site_selection_handles_fully_served_fast_mode() -> None:
+    territory = Polygon([(1.82, 50.92), (1.90, 50.92), (1.90, 50.98), (1.82, 50.98)])
+    request = DecisionRequest(
+        territory_geometry=mapping(territory),
+        territory_name="Calais",
+        territory_code="62193",
+        population=67_544,
+        mode="car",
+        threshold_minutes=30,
+    )
+    demo = Path(__file__).parents[3] / "data/demo/calais-facilities-osm.geojson"
+
+    result = analyze_sites(request, demo)
+
+    assert result.scenario_access_rate >= result.current_access_rate
+    assert len(result.candidates["features"]) >= 1
