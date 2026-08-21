@@ -14,14 +14,27 @@ export function MapCanvas({ territory, layers, visibleIds, diagnostic, scenarioL
   const container = useRef<HTMLDivElement | null>(null);
   const map = useRef<MapLibreMap | null>(null);
   const renderedLayerIds = useRef<Set<string>>(new Set());
+  const placingScenarioRef = useRef(placingScenario);
+  const scenarioClickRef = useRef(onScenarioMapClick);
   useEffect(() => {
     if (!container.current || map.current) return;
-    map.current = new maplibregl.Map({ container: container.current, center: [2.3, 46.6], zoom: 4.7, attributionControl: false, style: { version: 8, sources: { osm: { type: "raster", tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"], tileSize: 256, attribution: "© OpenStreetMap contributors" } }, layers: [{ id: "osm", type: "raster", source: "osm" }] } });
-    map.current.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-right");
-    map.current.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left");
-    map.current.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: "GeoDashboard" }), "bottom-right");
-    return () => { map.current?.remove(); map.current = null; };
+    const instance = new maplibregl.Map({ container: container.current, center: [2.3, 46.6], zoom: 4.7, attributionControl: false, style: { version: 8, sources: { osm: { type: "raster", tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"], tileSize: 256, attribution: "© OpenStreetMap contributors" } }, layers: [{ id: "osm", type: "raster", source: "osm" }] } });
+    map.current = instance;
+    instance.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-right");
+    instance.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left");
+    instance.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: "GeoDashboard" }), "bottom-right");
+    const handleScenarioClick = (event: maplibregl.MapMouseEvent) => {
+      if (!placingScenarioRef.current) return;
+      scenarioClickRef.current({ longitude: event.lngLat.lng, latitude: event.lngLat.lat });
+    };
+    instance.on("click", handleScenarioClick);
+    return () => { instance.off("click", handleScenarioClick); instance.remove(); map.current = null; };
   }, []);
+  useEffect(() => {
+    placingScenarioRef.current = placingScenario;
+    scenarioClickRef.current = onScenarioMapClick;
+    if (map.current) map.current.getCanvas().style.cursor = placingScenario ? "crosshair" : "";
+  }, [placingScenario, onScenarioMapClick]);
   useEffect(() => {
     const currentMap = map.current;
     if (!currentMap || !territory) return;
@@ -76,15 +89,6 @@ export function MapCanvas({ territory, layers, visibleIds, diagnostic, scenarioL
   useEffect(() => {
     const currentMap = map.current;
     if (!currentMap) return;
-    currentMap.getCanvas().style.cursor = placingScenario ? "crosshair" : "";
-    if (!placingScenario) return;
-    const handler = (event: maplibregl.MapMouseEvent) => onScenarioMapClick({ longitude: event.lngLat.lng, latitude: event.lngLat.lat });
-    currentMap.once("click", handler);
-    return () => { currentMap.off("click", handler); };
-  }, [placingScenario, onScenarioMapClick]);
-  useEffect(() => {
-    const currentMap = map.current;
-    if (!currentMap) return;
     const update = () => {
       const collection: FeatureCollection = { type: "FeatureCollection", features: scenarioLocations.map((location, index) => ({ type: "Feature", properties: { index }, geometry: { type: "Point", coordinates: [location.longitude, location.latitude] } })) };
       const scenarioSource = currentMap.getSource("scenario-sites") as GeoJSONSource | undefined;
@@ -103,6 +107,7 @@ export function MapCanvas({ territory, layers, visibleIds, diagnostic, scenarioL
         currentMap.addLayer({ id: "coverage-current", type: "fill", source: "coverage-result", filter: ["==", ["get", "state"], "current"], paint: { "fill-color": "#7452c8", "fill-opacity": .25 } });
         currentMap.addLayer({ id: "coverage-scenario", type: "fill", source: "coverage-result", filter: ["==", ["get", "state"], "scenario"], paint: { "fill-color": "#14b8a6", "fill-opacity": .38, "fill-outline-color": "#087d73" } });
       }
+      if (currentMap.getLayer("scenario-sites")) currentMap.moveLayer("scenario-sites");
     };
     if (currentMap.loaded()) update(); else currentMap.once("load", update);
   }, [diagnostic, scenarioLocations]);
