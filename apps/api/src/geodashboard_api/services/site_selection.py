@@ -29,6 +29,7 @@ def analyze_sites(
     demo_path: Path,
     filosofi_path: Path | None = None,
     water_mask_path: Path | None = None,
+    eligible_parcels_path: Path | None = None,
 ) -> DecisionResult:
     """Classe des sites candidats à partir d'une maille de demande reproductible."""
     if request.territory_code != "62193":
@@ -71,6 +72,7 @@ def analyze_sites(
                     {
                         "geometry": cell,
                         "center": cell.representative_point(),
+                        "id": str(feature.id),
                         "population": max(0, round(float(feature.population))),
                         "vulnerability": float(feature.vulnerability),
                         "imputed": bool(feature.imputed),
@@ -104,6 +106,7 @@ def analyze_sites(
                 35 + 55 * (1 - min(1, center.distance(territory.centroid) / 5000)), 1
             )
             item["imputed"] = False
+            item["id"] = f"modeled-{len(populations)}"
         delta = request.population - sum(populations)
         if cells:
             cells[0]["population"] += delta
@@ -124,14 +127,41 @@ def analyze_sites(
         for item in cells
         if water_exclusion is None or not water_exclusion.covers(item["center"])
     ]
+    uses_parcels = bool(eligible_parcels_path and eligible_parcels_path.exists())
+    eligible_sites = eligible_cells
+    if uses_parcels and eligible_parcels_path:
+        parcels = gpd.read_file(eligible_parcels_path, engine="pyogrio").to_crs(metric_crs)
+        cell_by_id = {item["id"]: item for item in cells}
+        largest_by_cell: dict[str, Any] = {}
+        for parcel in parcels.itertuples():
+            cell_id = str(parcel.demand_cell_id)
+            if cell_id not in largest_by_cell or parcel.area_m2 > largest_by_cell[cell_id].area_m2:
+                largest_by_cell[cell_id] = parcel
+        eligible_sites = []
+        for cell_id, parcel in largest_by_cell.items():
+            cell = cell_by_id.get(cell_id)
+            if cell is None or (
+                water_exclusion is not None and water_exclusion.covers(parcel.geometry)
+            ):
+                continue
+            eligible_sites.append(
+                {
+                    **cell,
+                    "center": parcel.geometry,
+                    "parcel_id": parcel.parcel_id,
+                    "parcel_area_m2": round(float(parcel.area_m2)),
+                    "zone_type": parcel.zone_type,
+                    "zone_label": parcel.zone_label,
+                }
+            )
     eligible = sorted(
-        (item for item in eligible_cells if not item["served"]),
+        (item for item in eligible_sites if not item["served"]),
         key=lambda item: item["population"] * (1 + item["vulnerability"] / 100),
         reverse=True,
     )[:18]
     if not eligible:
         eligible = sorted(
-            eligible_cells,
+            eligible_sites,
             key=lambda item: item["population"] * (1 + item["vulnerability"] / 100),
             reverse=True,
         )[:5]
@@ -190,6 +220,10 @@ def analyze_sites(
                     "gained_people": row["gained"],
                     "vulnerable_people": round(row["vulnerable"]),
                     "constraint_status": "Hors masque hydrographique",
+                    "parcel_id": row["item"].get("parcel_id"),
+                    "parcel_area_m2": row["item"].get("parcel_area_m2"),
+                    "zone_type": row["item"].get("zone_type"),
+                    "zone_label": row["item"].get("zone_label"),
                 },
             }
         )
@@ -203,6 +237,9 @@ def analyze_sites(
         "gained_people": top["gained"],
         "longitude": round(_web(top["item"]["center"], metric_crs)["coordinates"][0], 6),
         "latitude": round(_web(top["item"]["center"], metric_crs)["coordinates"][1], 6),
+        "parcel_id": top["item"].get("parcel_id"),
+        "parcel_area_m2": top["item"].get("parcel_area_m2"),
+        "planning_zone": top["item"].get("zone_label"),
         "explanation": (
             "Le site A maximise le gain de population et dessert en priorité "
             f"des mailles vulnérables : +{top['gained']:,} habitants accessibles."
@@ -211,7 +248,10 @@ def analyze_sites(
     return DecisionResult(
         method="Préqualification multimodale — distance réseau estimée, calibration IGN à venir",
         data_status=(
-            "Équipements OSM, carreaux INSEE Filosofi 2021 et masque hydrographique OSM réels."
+            "Équipements OSM, INSEE Filosofi 2021, hydrographie OSM, zonage GPU "
+            "et parcelles cadastrales réels."
+            if uses_filosofi and uses_water_mask and uses_parcels
+            else "Équipements OSM, carreaux INSEE Filosofi 2021 et masque hydrographique OSM réels."
             if uses_filosofi and uses_water_mask
             else "Équipements OSM réels et carreaux INSEE Filosofi 2021 réels."
             if uses_filosofi
@@ -240,6 +280,17 @@ def analyze_sites(
                 if uses_filosofi
                 else []
             ),
+            *(
+                [
+                    {
+                        "name": "Zonage réglementaire",
+                        "provider": "Géoportail de l'urbanisme — PLUi en production",
+                    },
+                    {"name": "Parcelles", "provider": "Cadastre Etalab"},
+                ]
+                if uses_parcels
+                else []
+            ),
             {"name": "Équipements de santé", "provider": "OpenStreetMap — ODbL 1.0"},
             *(
                 [
@@ -262,7 +313,8 @@ def analyze_sites(
             "Les temps affichés sont une préqualification ; la V2 finale appellera "
             "les isochrones IGN.",
             "Le classement aide à comparer des zones et ne remplace pas une étude "
-            "foncière ou réglementaire ; l'eau et les berges (marge de 20 m) sont "
-            "exclues, mais les marqueurs ne sont pas encore des parcelles validées.",
+            "foncière ou une instruction d'urbanisme. Les parcelles sont situées en "
+            "zone U/AU et hors eau, mais le règlement écrit, la propriété, les réseaux "
+            "et les servitudes doivent encore être vérifiés.",
         ],
     )
