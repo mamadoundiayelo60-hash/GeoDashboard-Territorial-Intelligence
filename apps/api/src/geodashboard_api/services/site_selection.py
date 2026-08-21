@@ -70,6 +70,7 @@ def analyze_sites(
     filosofi_path: Path | None = None,
     water_mask_path: Path | None = None,
     eligible_parcels_path: Path | None = None,
+    custom_facilities: gpd.GeoDataFrame | None = None,
 ) -> DecisionResult:
     """Classe des sites candidats à partir d'une maille de demande reproductible."""
     if request.territory_code != "62193":
@@ -99,12 +100,18 @@ def analyze_sites(
         if sport_path.exists():
             all_facilities = gpd.read_file(sport_path, engine="pyogrio").to_crs(4326)
     theme = THEMES[request.theme]
-    mask = all_facilities.get("amenity").isin(theme["amenity"])
-    if "leisure" in all_facilities:
-        mask |= all_facilities["leisure"].isin(theme["leisure"])
-    if "tourism" in all_facilities:
-        mask |= all_facilities["tourism"].isin(theme["tourism"])
-    facilities = all_facilities[mask].copy()
+    if custom_facilities is not None:
+        facilities = custom_facilities.to_crs(4326).copy()
+        if not facilities.geometry.geom_type.isin(["Point", "MultiPoint"]).all():
+            raise ValueError("La couche d'équipements doit contenir des points.")
+        facilities = facilities.explode(index_parts=False, ignore_index=True)
+    else:
+        mask = all_facilities.get("amenity").isin(theme["amenity"])
+        if "leisure" in all_facilities:
+            mask |= all_facilities["leisure"].isin(theme["leisure"])
+        if "tourism" in all_facilities:
+            mask |= all_facilities["tourism"].isin(theme["tourism"])
+        facilities = all_facilities[mask].copy()
     facilities = facilities[facilities.geometry.within(territory_wgs)].to_crs(metric_crs)
     if facilities.empty:
         raise ValueError(
@@ -368,7 +375,12 @@ def analyze_sites(
                 if uses_parcels
                 else []
             ),
-            {"name": f"Équipements — {theme['label']}", "provider": "OpenStreetMap — ODbL 1.0"},
+            {
+                "name": f"Équipements — {theme['label']}",
+                "provider": "Couche métier importée par l'utilisateur"
+                if custom_facilities is not None
+                else "OpenStreetMap — ODbL 1.0",
+            },
             *(
                 [
                     {

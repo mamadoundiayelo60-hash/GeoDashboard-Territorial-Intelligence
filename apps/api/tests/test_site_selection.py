@@ -83,6 +83,37 @@ def test_site_selection_supports_education_theme() -> None:
     )
 
 
+def test_site_selection_uses_imported_equipment_layer_instead_of_osm() -> None:
+    territory = Polygon([(1.72, 50.88), (2.02, 50.88), (2.02, 51.02), (1.72, 51.02)])
+    imported = gpd.GeoDataFrame(
+        {"name": [f"Lieu culturel {index}" for index in range(12)]},
+        geometry=gpd.points_from_xy(
+            [1.80 + index * 0.01 for index in range(12)],
+            [50.93 + (index % 3) * 0.01 for index in range(12)],
+        ),
+        crs=4326,
+    )
+    request = DecisionRequest(
+        territory_geometry=mapping(territory),
+        territory_name="Calais",
+        territory_code="62193",
+        population=67_544,
+        theme="culture",
+    )
+
+    result = analyze_sites(
+        request,
+        Path(__file__).parents[3] / "data/demo/calais-facilities-osm.geojson",
+        custom_facilities=imported,
+    )
+
+    assert len(result.facilities["features"]) == 12
+    assert any(
+        source["provider"] == "Couche métier importée par l'utilisateur"
+        for source in result.sources
+    )
+
+
 def test_site_selection_uses_real_filosofi_grid_when_available() -> None:
     territory = Polygon([(1.72, 50.88), (2.02, 50.88), (2.02, 51.02), (1.72, 51.02)])
     request = DecisionRequest(

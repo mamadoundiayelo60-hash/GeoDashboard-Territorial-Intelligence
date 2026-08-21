@@ -45,10 +45,10 @@ export async function runSiteSelection(input: {
   mode: string;
   thresholdMinutes: number;
   weights: DecisionWeights;
+  equipmentLayerId?: string;
 }): Promise<DecisionResult> {
   const response = await fetch(`${baseUrl}/api/v1/decisions/site-selection`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       territory_geometry: input.territoryGeometry,
       territory_name: input.territoryName,
@@ -58,7 +58,14 @@ export async function runSiteSelection(input: {
       mode: input.mode,
       threshold_minutes: input.thresholdMinutes,
       weights: input.weights,
+      equipment_layer_id: input.equipmentLayerId,
     }),
+    headers: {
+      "Content-Type": "application/json",
+      ...(sessionStorage.getItem("geodashboard-session")
+        ? { "X-Session-ID": sessionStorage.getItem("geodashboard-session")! }
+        : {}),
+    },
   });
   const body = (await response.json()) as DecisionResult | { detail?: string };
   if (!response.ok)
