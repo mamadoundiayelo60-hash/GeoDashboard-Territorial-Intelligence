@@ -294,6 +294,12 @@ def analyze_sites(
             (row["item"]["center"].distance(point) for point in facility_points), default=radius * 2
         )
         equity = min(1.0, isolation / (radius * 1.5))
+        row["equity"] = equity
+        row["population_component"] = 100 * request.weights.population * row["gained"] / max_gain
+        row["vulnerability_component"] = (
+            100 * request.weights.vulnerability * row["vulnerable"] / max_vulnerable
+        )
+        row["equity_component"] = 100 * request.weights.equity * equity
         row["score"] = 100 * (
             request.weights.population * row["gained"] / max_gain
             + request.weights.vulnerability * row["vulnerable"] / max_vulnerable
@@ -334,6 +340,9 @@ def analyze_sites(
                     "score": round(row["score"], 1),
                     "gained_people": row["gained"],
                     "vulnerable_people": round(row["vulnerable"]),
+                    "population_component": round(row["population_component"], 1),
+                    "vulnerability_component": round(row["vulnerability_component"], 1),
+                    "equity_component": round(row["equity_component"], 1),
                     "constraint_status": "Hors masque hydrographique",
                     "parcel_id": row["item"].get("parcel_id"),
                     "parcel_area_m2": row["item"].get("parcel_area_m2"),
