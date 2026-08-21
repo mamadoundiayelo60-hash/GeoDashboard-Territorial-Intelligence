@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     ign_navigation_timeout_seconds: float = Field(default=12.0, ge=2.0, le=30.0)
     runtime_data_dir: Path = Path("data/runtime")
     demo_data_path: Path = Path("data/demo/calais-facilities-osm.geojson")
+    filosofi_demo_path: Path = Path("data/demo/calais-filosofi-200m.geojson")
     max_upload_mb: int = Field(default=50, ge=1, le=100)
 
     @field_validator("database_url")
@@ -65,9 +66,7 @@ class Settings(BaseSettings):
     def lock_ign_navigation_host(cls, value: str) -> str:
         """Verrouille le connecteur sur le service officiel de la Géoplateforme."""
         if value.rstrip("/") != "https://data.geopf.fr/navigation":
-            raise ValueError(
-                "L'hôte de navigation IGN doit être https://data.geopf.fr/navigation."
-            )
+            raise ValueError("L'hôte de navigation IGN doit être https://data.geopf.fr/navigation.")
         return value.rstrip("/")
 
 

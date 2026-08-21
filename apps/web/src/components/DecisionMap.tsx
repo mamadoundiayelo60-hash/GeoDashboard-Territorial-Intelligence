@@ -149,11 +149,12 @@ export function DecisionMap({ territory, result, comparison, visibility }: Props
         content = popupContent(
           "Maille de demande",
           [
-            ["Population estimée", Number(properties.population).toLocaleString("fr-FR")],
+            ["Population Filosofi", Number(properties.population).toLocaleString("fr-FR")],
             ["Vulnérabilité", `${properties.vulnerability}/100`],
             ["Accessibilité actuelle", properties.served ? "Desservie" : "Non desservie"],
+            ["Valeur imputée", properties.imputed ? "Oui — valeur approchée" : "Non"],
           ],
-          "Modèle de démonstration — future maille INSEE Filosofi",
+          "INSEE — Filosofi 2021, carreau de 200 m",
         );
       }
 
@@ -180,3 +181,4 @@ export function DecisionMap({ territory, result, comparison, visibility }: Props
   useEffect(() => { if (map.current?.getLayer("scenarioArea")) map.current.setPaintProperty("scenarioArea", "fill-opacity", comparison / 100 * 0.22); }, [comparison]);
   return <div className="decision-map" ref={container} />;
 }
+

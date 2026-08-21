@@ -8,7 +8,7 @@ import { TerritorySearch } from "./components/TerritorySearch";
 const format = new Intl.NumberFormat("fr-FR");
 const layerDefinitions: Array<{ id: DecisionLayerId; label: string; detail: string; color: string }> = [
   { id: "facilities", label: "Équipements existants", detail: "Santé · OpenStreetMap", color: "#f8fafc" },
-  { id: "grid", label: "Population & vulnérabilité", detail: "Mailles de demande", color: "#ff5c7a" },
+  { id: "grid", label: "Population & vulnérabilité", detail: "INSEE Filosofi 2021 · 200 m", color: "#ff5c7a" },
   { id: "currentArea", label: "Accessibilité actuelle", detail: "Seuil sélectionné", color: "#55d7cf" },
   { id: "scenarioArea", label: "Impact du scénario", detail: "Avec le site A", color: "#6cf3c5" },
   { id: "candidates", label: "Sites candidats", detail: "Classement multicritère", color: "#ffd166" },
@@ -53,3 +53,4 @@ export function App() {
     <footer><span>Méthode : {result?.method ?? "chargement"}</span><span>{result?.sources.map(source => source.provider).join(" · ")}</span></footer>
   </div>;
 }
+

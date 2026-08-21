@@ -53,8 +53,7 @@ async def enrich_decision_with_ign(
         return result.model_copy(
             update={
                 "method": (
-                    "Préqualification vélo — vitesse conventionnelle, "
-                    "réseau IGN indisponible"
+                    "Préqualification vélo — vitesse conventionnelle, réseau IGN indisponible"
                 ),
                 "limitations": [
                     *result.limitations,
@@ -97,6 +96,13 @@ async def enrich_decision_with_ign(
     scenario_area = territory.intersection(current_area.union(isochrones[-1].geometry))
     current_people = 0
     scenario_people = 0
+    analysis_population = (
+        sum(
+            int((feature.get("properties") or {}).get("population") or 0)
+            for feature in result.demand_grid.get("features", [])
+        )
+        or request.population
+    )
     grid = result.demand_grid.copy()
     grid["features"] = []
     for feature in result.demand_grid.get("features", []):
@@ -135,13 +141,17 @@ async def enrich_decision_with_ign(
             ),
             "data_status": (
                 "Isochrones réseau IGN réels ; équipements OSM réels ; "
-                "répartition infracommunale encore modélisée."
+                + (
+                    "population et vulnérabilité INSEE Filosofi 2021 réelles."
+                    if "Filosofi" in result.data_status
+                    else "répartition infracommunale modélisée."
+                )
             ),
-            "current_access_rate": round(current_people / request.population * 100, 1),
-            "scenario_access_rate": round(scenario_people / request.population * 100, 1),
+            "current_access_rate": round(current_people / analysis_population * 100, 1),
+            "scenario_access_rate": round(scenario_people / analysis_population * 100, 1),
             "gained_people": gained,
-            "underserved_people": max(0, request.population - current_people),
-            "equity_gain": round(gained / request.population * 100, 1),
+            "underserved_people": max(0, analysis_population - current_people),
+            "equity_gain": round(gained / analysis_population * 100, 1),
             "demand_grid": grid,
             "candidates": candidates_updated,
             "current_service_area": mapping(current_area),
