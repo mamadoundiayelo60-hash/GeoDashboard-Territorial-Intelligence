@@ -33,11 +33,21 @@ async def site_selection(
                 custom_facilities = store.load_frame(UUID(request.equipment_layer_id))
             except (ValueError, FileNotFoundError) as exc:
                 raise ValueError("La couche importée est introuvable ou expirée.") from exc
+        filosofi_path = (
+            settings.filosofi_demo_path if request.territory_code == "62193" else None
+        )
+        if request.territory_code == "75056":
+            filosofi_path = settings.filosofi_demo_path.with_name("paris-filosofi-200m.geojson")
+        exclusion_path = (
+            settings.water_mask_path if request.territory_code == "62193" else None
+        )
+        if request.territory_code == "75056":
+            exclusion_path = settings.water_mask_path.with_name("paris-exclusion-mask.geojson")
         result = analyze_sites(
             request,
             settings.demo_data_path,
-            settings.filosofi_demo_path,
-            settings.water_mask_path,
+            filosofi_path,
+            exclusion_path,
             settings.eligible_parcels_path,
             custom_facilities,
         )
