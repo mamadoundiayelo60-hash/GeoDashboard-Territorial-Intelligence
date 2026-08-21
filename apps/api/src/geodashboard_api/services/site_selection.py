@@ -135,9 +135,7 @@ def analyze_sites(
     territory = territory_series.to_crs(metric_crs).iloc[0]
 
     water_exclusion = None
-    uses_water_mask = bool(
-        request.territory_code == "62193" and water_mask_path and water_mask_path.exists()
-    )
+    uses_water_mask = bool(water_mask_path and water_mask_path.exists())
     if uses_water_mask and water_mask_path:
         water = gpd.read_file(water_mask_path, engine="pyogrio").to_crs(metric_crs)
         if not water.empty:
@@ -170,9 +168,7 @@ def analyze_sites(
         )
 
     cells: list[dict[str, Any]] = []
-    uses_filosofi = bool(
-        request.territory_code == "62193" and filosofi_path and filosofi_path.exists()
-    )
+    uses_filosofi = bool(filosofi_path and filosofi_path.exists())
     if uses_filosofi and filosofi_path:
         filosofi = gpd.read_file(filosofi_path, engine="pyogrio").to_crs(metric_crs)
         for feature in filosofi.itertuples():
@@ -349,7 +345,7 @@ def analyze_sites(
                     "population_component": round(row["population_component"], 1),
                     "vulnerability_component": round(row["vulnerability_component"], 1),
                     "equity_component": round(row["equity_component"], 1),
-                    "constraint_status": "Hors masque hydrographique",
+                    "constraint_status": "Hors masque d'exclusion",
                     "parcel_id": row["item"].get("parcel_id"),
                     "parcel_area_m2": row["item"].get("parcel_area_m2"),
                     "zone_type": row["item"].get("zone_type"),
@@ -398,7 +394,7 @@ def analyze_sites(
             "Équipements OSM, INSEE Filosofi 2021, hydrographie OSM, zonage GPU "
             "et parcelles cadastrales réels."
             if uses_filosofi and uses_water_mask and uses_parcels
-            else "Équipements OSM, carreaux INSEE Filosofi 2021 et masque hydrographique OSM réels."
+            else "Équipements OSM, carreaux INSEE Filosofi 2021 et masque d'exclusion OSM réels."
             if uses_filosofi and uses_water_mask
             else "Équipements OSM réels et carreaux INSEE Filosofi 2021 réels."
             if uses_filosofi
@@ -447,7 +443,7 @@ def analyze_sites(
             *(
                 [
                     {
-                        "name": "Exclusions hydrographiques",
+                        "name": "Exclusions naturelles",
                         "provider": "OpenStreetMap — ODbL 1.0",
                     }
                 ]
@@ -462,8 +458,8 @@ def analyze_sites(
                 if uses_filosofi
                 else ["La maille de population est modélisée dans ce démonstrateur."]
             ),
-            "Les temps affichés sont une préqualification ; la V2 finale appellera "
-            "les isochrones IGN.",
+            "Les temps affichés sont une préqualification ; les isochrones réseau "
+            "sont activés uniquement sur les territoires entièrement préparés.",
             "Le classement aide à comparer des zones et ne remplace pas une étude "
             "foncière ou une instruction d'urbanisme. Les parcelles sont situées en "
             "zone U/AU et hors eau, mais le règlement écrit, la propriété, les réseaux "
