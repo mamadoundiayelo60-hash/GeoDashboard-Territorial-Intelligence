@@ -27,6 +27,12 @@ def test_site_selection_returns_ranked_explainable_candidates() -> None:
     assert result.gained_people > 0
     assert len(result.candidates["features"]) == 5
     assert result.recommendation["rank"] == 1
+    assert all(
+        "population_component" in feature["properties"]
+        and "vulnerability_component" in feature["properties"]
+        and "equity_component" in feature["properties"]
+        for feature in result.candidates["features"]
+    )
     assert result.sources
     assert result.limitations
 

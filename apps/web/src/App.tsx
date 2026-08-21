@@ -361,8 +361,8 @@ export function App() {
           ) : result && workspace === "compare" ? (
             <div className="workspace-summary">
               <b>COMPARAISON MULTICRITÈRE</b><strong>{topCandidates.length ? `${topCandidates.length} alternatives` : "Aucune alternative utile"}</strong>
-              {topCandidates.map((feature, index) => <article key={index}><span>Parcelle {String.fromCharCode(65 + index)}</span><strong>{String(feature.properties?.score)}/100 · +{format.format(Number(feature.properties?.gained_people ?? 0))}</strong></article>)}
-              <p>Le score est relatif à cette étude et ne remplace pas l’instruction foncière ou réglementaire.</p>
+              {topCandidates.map((feature, index) => <article className="candidate-comparison" key={index}><span>Parcelle {String.fromCharCode(65 + index)}</span><strong>{String(feature.properties?.score)}/100</strong><small>+{format.format(Number(feature.properties?.gained_people ?? 0))} hab. · Population {String(feature.properties?.population_component)} · Vulnérabilité {String(feature.properties?.vulnerability_component)} · Équité {String(feature.properties?.equity_component)}</small></article>)}
+              <p>Le classement porte sur le score global pondéré. La parcelle qui gagne le plus d’habitants n’est donc pas nécessairement première si elle répond moins bien à la vulnérabilité ou à l’équité spatiale.</p>
             </div>
           ) : result && workspace === "report" ? (
             <div className="workspace-summary"><b>RESTITUTION</b><strong>Note décisionnelle prête</strong><p>Territoire, paramètres, carte, recommandation, sources et limites sont réunis dans un PDF professionnel.</p>
@@ -459,6 +459,13 @@ export function App() {
               </button>
               </>}
             </>
+          ) : study.isError ? (
+            <div className="territory-empty data-missing">
+              <b>DONNÉES MÉTIER REQUISES</b><strong>{themes[theme].label}</strong>
+              <p>{study.error.message}</p>
+              <ul><li>Importez votre couche ponctuelle métier</li><li>Vérifiez son système de coordonnées</li><li>Relancez ensuite le diagnostic</li></ul>
+              <small>Aucun résultat ancien n’est conservé pour éviter une interprétation erronée.</small>
+            </div>
           ) : !isPilotTerritory ? (
             <div className="territory-empty">
               <b>Territoire exploratoire</b>
