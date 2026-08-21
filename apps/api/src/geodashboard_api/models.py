@@ -75,6 +75,7 @@ class DecisionRequest(BaseModel):
     territory_code: str = Field(pattern=r"^[0-9A-Z]{5}$")
     population: int = Field(ge=1)
     theme: str = Field(default="health", pattern=r"^(health|education|sport|culture)$")
+    equipment_layer_id: str | None = Field(default=None, pattern=r"^[0-9a-fA-F-]{36}$")
     mode: str = Field(default="pedestrian", pattern=r"^(pedestrian|bicycle|car)$")
     threshold_minutes: int = Field(default=15, ge=5, le=30)
     weights: DecisionWeights = Field(default_factory=DecisionWeights)
