@@ -26,6 +26,7 @@ async def site_selection(
             settings.demo_data_path,
             settings.filosofi_demo_path,
             settings.water_mask_path,
+            settings.eligible_parcels_path,
         )
         async with httpx.AsyncClient(
             base_url=settings.ign_navigation_base_url,

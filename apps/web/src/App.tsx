@@ -11,7 +11,7 @@ const layerDefinitions: Array<{ id: DecisionLayerId; label: string; detail: stri
   { id: "grid", label: "Population & vulnérabilité", detail: "INSEE Filosofi 2021 · 200 m", color: "#ff5c7a" },
   { id: "currentArea", label: "Accessibilité actuelle", detail: "Seuil sélectionné", color: "#55d7cf" },
   { id: "scenarioArea", label: "Impact du scénario", detail: "Avec le site A", color: "#6cf3c5" },
-  { id: "candidates", label: "Zones candidates", detail: "Préqualification · non parcellaire", color: "#ffd166" },
+  { id: "candidates", label: "Parcelles préqualifiées", detail: "Cadastre · zones U/AU · hors eau", color: "#ffd166" },
 ];
 
 export function App() {
@@ -54,4 +54,3 @@ export function App() {
     <footer><span>Méthode : {result?.method ?? "chargement"}</span><span>{result?.sources.map(source => source.provider).join(" · ")}</span></footer>
   </div>;
 }
-

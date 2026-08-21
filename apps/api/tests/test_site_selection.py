@@ -117,3 +117,31 @@ def test_candidates_are_outside_hydrographic_exclusion() -> None:
         for feature in result.candidates["features"]
     )
     assert "masque hydrographique" in result.data_status
+
+
+def test_candidates_are_attached_to_eligible_cadastral_parcels() -> None:
+    territory = Polygon([(1.72, 50.88), (2.02, 50.88), (2.02, 51.02), (1.72, 51.02)])
+    request = DecisionRequest(
+        territory_geometry=mapping(territory),
+        territory_name="Calais",
+        territory_code="62193",
+        population=67_544,
+        mode="pedestrian",
+        threshold_minutes=15,
+    )
+    root = Path(__file__).parents[3]
+    result = analyze_sites(
+        request,
+        root / "data/demo/calais-facilities-osm.geojson",
+        root / "data/demo/calais-filosofi-200m.geojson",
+        root / "data/demo/calais-water-mask.geojson",
+        root / "data/demo/calais-eligible-parcels.geojson",
+    )
+
+    for feature in result.candidates["features"]:
+        properties = feature["properties"]
+        assert properties["parcel_id"].startswith("62193")
+        assert 500 <= properties["parcel_area_m2"] <= 50_000
+        assert properties["zone_type"].startswith(("U", "AU"))
+    assert result.recommendation["parcel_id"].startswith("62193")
+    assert "Cadastre Etalab" in {source["provider"] for source in result.sources}
