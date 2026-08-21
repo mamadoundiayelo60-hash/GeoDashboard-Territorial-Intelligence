@@ -14,6 +14,14 @@ import {
 import { TerritorySearch } from "./components/TerritorySearch";
 
 const format = new Intl.NumberFormat("fr-FR");
+type ThemeId = "health" | "education" | "sport" | "culture";
+type Workspace = "observe" | "decide" | "compare" | "report";
+const themes: Record<ThemeId, { label: string; eyebrow: string; title: string; description: string }> = {
+  health: { label: "Santé", eyebrow: "ACCÈS AUX SOINS", title: "Où implanter le prochain service de santé ?", description: "Réduire les déserts de soins en priorisant les secteurs vulnérables." },
+  education: { label: "Éducation", eyebrow: "ACCÈS À L’ÉDUCATION", title: "Où renforcer l’offre éducative ?", description: "Identifier les secteurs éloignés des équipements d’apprentissage." },
+  sport: { label: "Sport", eyebrow: "ACCÈS AU SPORT", title: "Où créer le prochain équipement sportif ?", description: "Rééquilibrer l’accès aux équipements sportifs de proximité." },
+  culture: { label: "Culture", eyebrow: "ACCÈS À LA CULTURE", title: "Où développer l’offre culturelle ?", description: "Repérer les quartiers sous-dotés en services culturels de proximité." },
+};
 const layerDefinitions: Array<{
   id: DecisionLayerId;
   label: string;
@@ -53,6 +61,8 @@ const layerDefinitions: Array<{
 ];
 
 export function App() {
+  const [workspace, setWorkspace] = useState<Workspace>("decide");
+  const [theme, setTheme] = useState<ThemeId>("health");
   const [selected, setSelected] = useState<CommuneSummary>({
     code: "62193",
     name: "Calais",
@@ -94,6 +104,7 @@ export function App() {
         territoryName: territory.data!.name,
         territoryCode: territory.data!.code,
         population: territory.data!.population ?? 1,
+        theme,
         mode,
         thresholdMinutes: minutes,
         weights,
@@ -102,7 +113,7 @@ export function App() {
   useEffect(() => {
     study.reset();
     if (territory.data && isPilotTerritory) study.mutate();
-  }, [territory.data, isPilotTerritory]);
+  }, [territory.data, isPilotTerritory, theme]);
   const result = study.isError ? null : (study.data ?? null);
   const topCandidates = useMemo(
     () => result?.candidates.features.slice(0, 3) ?? [],
@@ -125,12 +136,11 @@ export function App() {
             <span>SPATIAL DECISION INTELLIGENCE</span>
           </div>
         </div>
-        <nav>
-          <b>Observer</b>
-          <b className="active">Décider</b>
-          <b>Comparer</b>
-          <b>Restituer</b>
-        </nav>
+        <nav>{(["observe", "decide", "compare", "report"] as Workspace[]).map((item) => (
+          <button className={workspace === item ? "active" : ""} onClick={() => setWorkspace(item)} key={item}>
+            {{ observe: "Observer", decide: "Décider", compare: "Comparer", report: "Restituer" }[item]}
+          </button>
+        ))}</nav>
         <button onClick={() => setSearchOpen(!searchOpen)}>
           ⌖ {selected.name} · {selected.code}
         </button>
@@ -147,12 +157,12 @@ export function App() {
       )}
       <main className="v2-main">
         <aside className="decision-panel">
-          <div className="eyebrow">ÉTUDE 01 · ACCÈS AUX SOINS</div>
-          <h1>Où implanter le prochain service de santé&nbsp;?</h1>
-          <p>
-            Réduire le nombre d’habitants éloignés d’un équipement, en
-            priorisant les secteurs vulnérables.
-          </p>
+          <div className="eyebrow">ÉTUDE 01 · {themes[theme].eyebrow}</div>
+          <h1>{workspace === "observe" ? `Observer l’offre ${themes[theme].label.toLowerCase()}` : workspace === "compare" ? "Comparer les scénarios" : workspace === "report" ? "Restituer la décision" : themes[theme].title}</h1>
+          <p>{workspace === "observe" ? "Explorez l’offre existante, la demande et les secteurs non desservis." : workspace === "compare" ? "Comparez les alternatives avec des indicateurs homogènes et explicables." : workspace === "report" ? "Produisez une note professionnelle avec méthode, sources et limites." : themes[theme].description}</p>
+          <section><label>THÉMATIQUE TERRITORIALE</label><div className="theme-switch">
+            {(Object.keys(themes) as ThemeId[]).map((id) => <button className={theme === id ? "active" : ""} onClick={() => setTheme(id)} key={id}>{themes[id].label}</button>)}
+          </div></section>
           <section>
             <label>MODE DE DÉPLACEMENT</label>
             <div className="mode-switch">
@@ -244,6 +254,7 @@ export function App() {
               result={result}
               comparison={comparison}
               visibility={visibility}
+              facilityLabel={`Équipement — ${themes[theme].label}`}
             />
           )}
           <button
@@ -282,7 +293,7 @@ export function App() {
                   <i style={{ background: layer.color }} />
                   <div>
                     <strong>{layer.label}</strong>
-                    <small>{layer.detail}</small>
+                    <small>{layer.id === "facilities" ? `${themes[theme].label} · OpenStreetMap` : layer.detail}</small>
                   </div>
                   <b>{isPilotTerritory && visibility[layer.id] ? "ON" : "—"}</b>
                 </button>
@@ -294,7 +305,7 @@ export function App() {
               </p>
             </div>
           )}
-          {isPilotTerritory && (
+          {isPilotTerritory && result?.has_actionable_gain && (
             <div className="compare-control">
               <span>Situation actuelle</span>
               <input
@@ -310,8 +321,28 @@ export function App() {
         </section>
         <aside className="insight-panel">
           <div className="eyebrow">IMPACT DU MEILLEUR SCÉNARIO</div>
-          {result ? (
+          {result && workspace === "observe" ? (
+            <div className="workspace-summary">
+              <b>PORTRAIT TERRITORIAL</b><strong>{themes[theme].label} · {selected.name}</strong>
+              <article><span>Équipements observés</span><strong>{result.facilities.features.length}</strong></article>
+              <article><span>Population accessible</span><strong>{result.current_access_rate}%</strong></article>
+              <article><span>Habitants encore éloignés</span><strong>{format.format(result.underserved_people)}</strong></article>
+              <p>Cette vue décrit l’existant. Passez à « Décider » pour simuler une implantation.</p>
+            </div>
+          ) : result && workspace === "compare" ? (
+            <div className="workspace-summary">
+              <b>COMPARAISON MULTICRITÈRE</b><strong>{topCandidates.length ? `${topCandidates.length} alternatives` : "Aucune alternative utile"}</strong>
+              {topCandidates.map((feature, index) => <article key={index}><span>Parcelle {String.fromCharCode(65 + index)}</span><strong>{String(feature.properties?.score)}/100 · +{format.format(Number(feature.properties?.gained_people ?? 0))}</strong></article>)}
+              <p>Le score est relatif à cette étude et ne remplace pas l’instruction foncière ou réglementaire.</p>
+            </div>
+          ) : result && workspace === "report" ? (
+            <div className="workspace-summary"><b>RESTITUTION</b><strong>Note décisionnelle prête</strong><p>Territoire, paramètres, carte, recommandation, sources et limites sont réunis dans un PDF professionnel.</p>
+              <button className="report" disabled={reporting} onClick={() => { if (!territory.data) return; setReporting(true); void downloadDecisionReport({ territory: territory.data, decision: result, mode, thresholdMinutes: minutes, weights }).finally(() => setReporting(false)); }}>{reporting ? "Génération du PDF…" : "Télécharger la note décisionnelle ↗"}</button>
+            </div>
+          ) : result ? (
             <>
+              {!result.has_actionable_gain && <div className="no-gain"><b>AUCUNE IMPLANTATION PRIORITAIRE</b><strong>Le scénario n’améliore pas l’accès</strong><p>{result.decision_message}</p></div>}
+              {result.has_actionable_gain && <>
               <div className="hero-metric">
                 <span>Habitants supplémentaires accessibles</span>
                 <strong>+{format.format(result.gained_people)}</strong>
@@ -331,7 +362,7 @@ export function App() {
               <div className="recommend">
                 <span>RECOMMANDATION N°1</span>
                 <strong>
-                  Zone A · score relatif {result.recommendation.score}/100
+                  Parcelle A · score relatif {result.recommendation.score}/100
                 </strong>
                 <p>{result.recommendation.explanation}</p>
               </div>
@@ -342,7 +373,7 @@ export function App() {
                     <b>{String.fromCharCode(65 + index)}</b>
                     <div>
                       <strong>
-                        Zone candidate {String.fromCharCode(65 + index)}
+                        Parcelle candidate {String.fromCharCode(65 + index)}
                       </strong>
                       <small>
                         +
@@ -397,6 +428,7 @@ export function App() {
               >
                 {reporting ? "Génération du PDF…" : "Télécharger la note décisionnelle ↗"}
               </button>
+              </>}
             </>
           ) : !isPilotTerritory ? (
             <div className="territory-empty">
