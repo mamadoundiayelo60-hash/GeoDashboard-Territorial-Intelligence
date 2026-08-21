@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   downloadDecisionReport,
@@ -12,6 +12,7 @@ import {
   type DecisionLayerVisibility,
 } from "./components/DecisionMap";
 import { TerritorySearch } from "./components/TerritorySearch";
+import { uploadLayer, type LayerSummary } from "./api/layers";
 
 const format = new Intl.NumberFormat("fr-FR");
 type ThemeId = "health" | "education" | "sport" | "culture";
@@ -63,6 +64,10 @@ const layerDefinitions: Array<{
 export function App() {
   const [workspace, setWorkspace] = useState<Workspace>("decide");
   const [theme, setTheme] = useState<ThemeId>("health");
+  const [equipmentLayer, setEquipmentLayer] = useState<LayerSummary | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const uploadInput = useRef<HTMLInputElement | null>(null);
   const [selected, setSelected] = useState<CommuneSummary>({
     code: "62193",
     name: "Calais",
@@ -108,12 +113,13 @@ export function App() {
         mode,
         thresholdMinutes: minutes,
         weights,
+        equipmentLayerId: equipmentLayer?.id,
       }),
   });
   useEffect(() => {
     study.reset();
     if (territory.data && isPilotTerritory) study.mutate();
-  }, [territory.data, isPilotTerritory, theme]);
+  }, [territory.data, isPilotTerritory, theme, equipmentLayer]);
   const result = study.isError ? null : (study.data ?? null);
   const topCandidates = useMemo(
     () => result?.candidates.features.slice(0, 3) ?? [],
@@ -161,8 +167,19 @@ export function App() {
           <h1>{workspace === "observe" ? `Observer l’offre ${themes[theme].label.toLowerCase()}` : workspace === "compare" ? "Comparer les scénarios" : workspace === "report" ? "Restituer la décision" : themes[theme].title}</h1>
           <p>{workspace === "observe" ? "Explorez l’offre existante, la demande et les secteurs non desservis." : workspace === "compare" ? "Comparez les alternatives avec des indicateurs homogènes et explicables." : workspace === "report" ? "Produisez une note professionnelle avec méthode, sources et limites." : themes[theme].description}</p>
           <section><label>THÉMATIQUE TERRITORIALE</label><div className="theme-switch">
-            {(Object.keys(themes) as ThemeId[]).map((id) => <button className={theme === id ? "active" : ""} onClick={() => setTheme(id)} key={id}>{themes[id].label}</button>)}
+            {(Object.keys(themes) as ThemeId[]).map((id) => <button className={theme === id ? "active" : ""} onClick={() => { setTheme(id); setEquipmentLayer(null); setUploadError(null); }} key={id}>{themes[id].label}</button>)}
           </div></section>
+          <section className="equipment-import">
+            <label>DONNÉES MÉTIER</label>
+            <input ref={uploadInput} hidden type="file" accept=".geojson,.json,.gpkg,.zip,.kml,.csv" onChange={(event) => {
+              const file = event.target.files?.[0]; if (!file) return;
+              setUploading(true); setUploadError(null);
+              void uploadLayer(file).then(setEquipmentLayer).catch((error: Error) => setUploadError(error.message)).finally(() => { setUploading(false); event.target.value = ""; });
+            }} />
+            <button className="import-action" disabled={uploading} onClick={() => uploadInput.current?.click()}>{uploading ? "Contrôle de la couche…" : "+ Importer mes équipements"}</button>
+            {equipmentLayer ? <div className="import-success"><b>{equipmentLayer.name}</b><span>{equipmentLayer.feature_count} points · qualité {equipmentLayer.quality.score}/100</span><button onClick={() => setEquipmentLayer(null)}>Utiliser OSM</button></div> : <small>GeoJSON, GeoPackage, Shapefile ZIP, KML ou CSV géographique.</small>}
+            {uploadError && <small className="error">{uploadError}</small>}
+          </section>
           <section>
             <label>MODE DE DÉPLACEMENT</label>
             <div className="mode-switch">
