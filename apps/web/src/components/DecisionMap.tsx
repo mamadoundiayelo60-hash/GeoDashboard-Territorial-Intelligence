@@ -85,7 +85,18 @@ export function DecisionMap({ territory, result, comparison, visibility, facilit
 
   useEffect(() => {
     const current = map.current;
-    if (!current || !result) return;
+    if (!current) return;
+    if (!result) {
+      ["grid", "facilities", "candidates"].forEach((id) => {
+        const source = current.getSource(id) as GeoJSONSource | undefined;
+        source?.setData({ type: "FeatureCollection", features: [] });
+      });
+      ["currentArea", "scenarioArea"].forEach((id) => {
+        const source = current.getSource(id) as GeoJSONSource | undefined;
+        source?.setData({ type: "Feature", properties: {}, geometry: { type: "GeometryCollection", geometries: [] } });
+      });
+      return;
+    }
     const draw = () => {
       const sources: Record<string, FeatureCollection | Feature> = {
         grid: result.demand_grid,
