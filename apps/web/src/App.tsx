@@ -110,6 +110,7 @@ export function App() {
     queryFn: () => getTerritory(selected.code),
   });
   const isPilotTerritory = selected.code === "62193";
+  const candidateLabel = isPilotTerritory ? "Parcelle" : "Zone";
   const canAnalyze = isPilotTerritory || equipmentLayer !== null;
   const study = useMutation({
     mutationFn: () =>
@@ -322,7 +323,7 @@ export function App() {
                 >
                   <i style={{ background: layer.color }} />
                   <div>
-                    <strong>{layer.label}</strong>
+                    <strong>{layer.id === "candidates" && !isPilotTerritory ? "Zones exploratoires" : layer.label}</strong>
                     <small>{layer.id === "facilities" ? `${themes[theme].label} · OpenStreetMap` : layer.detail}</small>
                   </div>
                   <b>{result && visibility[layer.id] ? "ON" : "—"}</b>
@@ -362,7 +363,7 @@ export function App() {
           ) : result && workspace === "compare" ? (
             <div className="workspace-summary">
               <b>COMPARAISON MULTICRITÈRE</b><strong>{topCandidates.length ? `${topCandidates.length} alternatives` : "Aucune alternative utile"}</strong>
-              {topCandidates.map((feature, index) => <article className="candidate-comparison" key={index}><span>Parcelle {String.fromCharCode(65 + index)}</span><strong>{String(feature.properties?.score)}/100</strong><small>+{format.format(Number(feature.properties?.gained_people ?? 0))} hab. · Population {String(feature.properties?.population_component)} · Vulnérabilité {String(feature.properties?.vulnerability_component)} · Équité {String(feature.properties?.equity_component)}</small></article>)}
+              {topCandidates.map((feature, index) => <article className="candidate-comparison" key={index}><span>{candidateLabel} {String.fromCharCode(65 + index)}</span><strong>{String(feature.properties?.score)}/100</strong><small>+{format.format(Number(feature.properties?.gained_people ?? 0))} hab. · Population {String(feature.properties?.population_component)} · Vulnérabilité {String(feature.properties?.vulnerability_component)} · Équité {String(feature.properties?.equity_component)}</small></article>)}
               <p>Le classement porte sur le score global pondéré. La parcelle qui gagne le plus d’habitants n’est donc pas nécessairement première si elle répond moins bien à la vulnérabilité ou à l’équité spatiale.</p>
             </div>
           ) : result && workspace === "report" ? (
@@ -392,7 +393,7 @@ export function App() {
               <div className="recommend">
                 <span>RECOMMANDATION N°1</span>
                 <strong>
-                  Parcelle A · score relatif {result.recommendation.score}/100
+                  {candidateLabel} A · score relatif {result.recommendation.score}/100
                 </strong>
                 <p>{result.recommendation.explanation}</p>
               </div>
@@ -403,7 +404,7 @@ export function App() {
                     <b>{String.fromCharCode(65 + index)}</b>
                     <div>
                       <strong>
-                        Parcelle candidate {String.fromCharCode(65 + index)}
+                        {candidateLabel} candidate {String.fromCharCode(65 + index)}
                       </strong>
                       <small>
                         +
