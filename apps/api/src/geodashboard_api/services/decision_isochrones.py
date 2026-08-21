@@ -49,6 +49,17 @@ async def enrich_decision_with_ign(
     batch_delay_seconds: float = 1.05,
 ) -> DecisionResult:
     """Recalcule la couverture avec le réseau IGN ou conserve le repli estimé."""
+    if request.territory_code != "62193":
+        return result.model_copy(
+            update={
+                "method": "Préqualification géométrique sur territoire importé",
+                "limitations": [
+                    *result.limitations,
+                    "Les isochrones réseau seront activés après préparation du socle local ; "
+                    "cette première analyse utilise une distance conventionnelle.",
+                ],
+            }
+        )
     if request.mode == "bicycle":
         return result.model_copy(
             update={
