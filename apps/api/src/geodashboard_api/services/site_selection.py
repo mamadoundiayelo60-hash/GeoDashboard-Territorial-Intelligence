@@ -28,6 +28,7 @@ def analyze_sites(
     request: DecisionRequest,
     demo_path: Path,
     filosofi_path: Path | None = None,
+    water_mask_path: Path | None = None,
 ) -> DecisionResult:
     """Classe des sites candidats à partir d'une maille de demande reproductible."""
     if request.territory_code != "62193":
@@ -42,6 +43,14 @@ def analyze_sites(
     if metric_crs is None:
         raise ValueError("Projection métrique indisponible pour ce territoire.")
     territory = territory_series.to_crs(metric_crs).iloc[0]
+
+    water_exclusion = None
+    uses_water_mask = bool(water_mask_path and water_mask_path.exists())
+    if uses_water_mask and water_mask_path:
+        water = gpd.read_file(water_mask_path, engine="pyogrio").to_crs(metric_crs)
+        if not water.empty:
+            # Une marge conservative évite de proposer un site sur une berge.
+            water_exclusion = unary_union(water.geometry.tolist()).buffer(20)
 
     all_facilities = gpd.read_file(demo_path, engine="pyogrio").to_crs(4326)
     health = all_facilities[all_facilities.get("amenity").isin(HEALTH_AMENITIES)].copy()
@@ -110,17 +119,24 @@ def analyze_sites(
         item["served"] = current_area.covers(item["center"])
     current_people = sum(item["population"] for item in cells if item["served"])
 
+    eligible_cells = [
+        item
+        for item in cells
+        if water_exclusion is None or not water_exclusion.covers(item["center"])
+    ]
     eligible = sorted(
-        (item for item in cells if not item["served"]),
+        (item for item in eligible_cells if not item["served"]),
         key=lambda item: item["population"] * (1 + item["vulnerability"] / 100),
         reverse=True,
     )[:18]
     if not eligible:
         eligible = sorted(
-            cells,
+            eligible_cells,
             key=lambda item: item["population"] * (1 + item["vulnerability"] / 100),
             reverse=True,
         )[:5]
+    if not eligible:
+        raise ValueError("Aucune zone candidate ne respecte les contraintes d'implantation.")
     scored: list[dict[str, Any]] = []
     max_gain = 1
     for item in eligible:
@@ -173,6 +189,7 @@ def analyze_sites(
                     "score": round(row["score"], 1),
                     "gained_people": row["gained"],
                     "vulnerable_people": round(row["vulnerable"]),
+                    "constraint_status": "Hors masque hydrographique",
                 },
             }
         )
@@ -194,7 +211,9 @@ def analyze_sites(
     return DecisionResult(
         method="Préqualification multimodale — distance réseau estimée, calibration IGN à venir",
         data_status=(
-            "Équipements OSM réels et carreaux INSEE Filosofi 2021 réels."
+            "Équipements OSM, carreaux INSEE Filosofi 2021 et masque hydrographique OSM réels."
+            if uses_filosofi and uses_water_mask
+            else "Équipements OSM réels et carreaux INSEE Filosofi 2021 réels."
             if uses_filosofi
             else "Population communale officielle et répartition infracommunale modélisée."
         ),
@@ -222,6 +241,16 @@ def analyze_sites(
                 else []
             ),
             {"name": "Équipements de santé", "provider": "OpenStreetMap — ODbL 1.0"},
+            *(
+                [
+                    {
+                        "name": "Exclusions hydrographiques",
+                        "provider": "OpenStreetMap — ODbL 1.0",
+                    }
+                ]
+                if uses_water_mask
+                else []
+            ),
             {"name": "Réseau cible", "provider": "Géoplateforme IGN — BD TOPO®"},
         ],
         limitations=[
@@ -233,8 +262,7 @@ def analyze_sites(
             "Les temps affichés sont une préqualification ; la V2 finale appellera "
             "les isochrones IGN.",
             "Le classement aide à comparer des zones et ne remplace pas une étude "
-            "foncière, hydraulique ou réglementaire ; les marqueurs ne sont pas "
-            "des parcelles validées.",
+            "foncière ou réglementaire ; l'eau et les berges (marge de 20 m) sont "
+            "exclues, mais les marqueurs ne sont pas encore des parcelles validées.",
         ],
     )
-
