@@ -30,6 +30,12 @@ def analyze_sites(
     filosofi_path: Path | None = None,
 ) -> DecisionResult:
     """Classe des sites candidats à partir d'une maille de demande reproductible."""
+    if request.territory_code != "62193":
+        raise ValueError(
+            "Le diagnostic décisionnel est actuellement disponible pour le territoire "
+            "pilote de Calais (62193). Les autres communes peuvent être explorées, mais "
+            "leur socle OSM/Filosofi doit être préparé avant tout classement."
+        )
     territory_wgs = shape(request.territory_geometry)
     territory_series = gpd.GeoSeries([territory_wgs], crs=4326)
     metric_crs = territory_series.estimate_utm_crs()
@@ -226,8 +232,9 @@ def analyze_sites(
             ),
             "Les temps affichés sont une préqualification ; la V2 finale appellera "
             "les isochrones IGN.",
-            "Le classement aide à comparer des sites et ne remplace pas une étude "
-            "foncière ou réglementaire.",
+            "Le classement aide à comparer des zones et ne remplace pas une étude "
+            "foncière, hydraulique ou réglementaire ; les marqueurs ne sont pas "
+            "des parcelles validées.",
         ],
     )
 

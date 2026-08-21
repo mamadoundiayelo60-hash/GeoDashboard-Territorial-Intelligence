@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pytest
 from shapely.geometry import Polygon, mapping
 
 from geodashboard_api.models import DecisionRequest
@@ -66,4 +67,18 @@ def test_site_selection_uses_real_filosofi_grid_when_available() -> None:
     assert len(result.demand_grid["features"]) == 419
     assert "Filosofi 2021" in result.data_status
     assert any(feature["properties"]["imputed"] for feature in result.demand_grid["features"])
+
+
+def test_site_selection_rejects_unprepared_territory() -> None:
+    territory = Polygon([(2.22, 48.81), (2.42, 48.81), (2.42, 48.91), (2.22, 48.91)])
+    request = DecisionRequest(
+        territory_geometry=mapping(territory),
+        territory_name="Paris",
+        territory_code="75056",
+        population=2_100_000,
+    )
+    demo = Path(__file__).parents[3] / "data/demo/calais-facilities-osm.geojson"
+
+    with pytest.raises(ValueError, match="territoire pilote de Calais"):
+        analyze_sites(request, demo)
 

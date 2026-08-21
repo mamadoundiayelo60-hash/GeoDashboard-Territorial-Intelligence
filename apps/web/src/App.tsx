@@ -11,7 +11,7 @@ const layerDefinitions: Array<{ id: DecisionLayerId; label: string; detail: stri
   { id: "grid", label: "Population & vulnérabilité", detail: "INSEE Filosofi 2021 · 200 m", color: "#ff5c7a" },
   { id: "currentArea", label: "Accessibilité actuelle", detail: "Seuil sélectionné", color: "#55d7cf" },
   { id: "scenarioArea", label: "Impact du scénario", detail: "Avec le site A", color: "#6cf3c5" },
-  { id: "candidates", label: "Sites candidats", detail: "Classement multicritère", color: "#ffd166" },
+  { id: "candidates", label: "Zones candidates", detail: "Préqualification · non parcellaire", color: "#ffd166" },
 ];
 
 export function App() {
@@ -26,8 +26,8 @@ export function App() {
   const [visibility, setVisibility] = useState<DecisionLayerVisibility>({ grid: true, currentArea: true, scenarioArea: true, facilities: true, candidates: true });
   const territory = useQuery({ queryKey: ["territory", selected.code], queryFn: () => getTerritory(selected.code) });
   const study = useMutation({ mutationFn: () => runSiteSelection({ territoryGeometry: territory.data!.geometry, territoryName: territory.data!.name, territoryCode: territory.data!.code, population: territory.data!.population ?? 1, mode, thresholdMinutes: minutes, weights }) });
-  useEffect(() => { if (territory.data) study.mutate(); }, [territory.data]);
-  const result = study.data ?? null;
+  useEffect(() => { if (territory.data) { study.reset(); study.mutate(); } }, [territory.data]);
+  const result = study.isError ? null : study.data ?? null;
   const topCandidates = useMemo(() => result?.candidates.features.slice(0, 3) ?? [], [result]);
   const setWeight = (key: keyof DecisionWeights, value: number) => setWeights(current => ({ ...current, [key]: value }));
   const toggleLayer = (id: DecisionLayerId) => setVisibility(current => ({ ...current, [id]: !current[id] }));
