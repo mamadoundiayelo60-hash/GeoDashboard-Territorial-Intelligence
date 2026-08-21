@@ -213,10 +213,10 @@ def test_candidates_are_outside_hydrographic_exclusion() -> None:
 
     assert all(not exclusion.covers(point) for point in candidates)
     assert all(
-        feature["properties"]["constraint_status"] == "Hors masque hydrographique"
+        feature["properties"]["constraint_status"] == "Hors masque d'exclusion"
         for feature in result.candidates["features"]
     )
-    assert "masque hydrographique" in result.data_status
+    assert "masque d'exclusion" in result.data_status
 
 
 def test_candidates_are_attached_to_eligible_cadastral_parcels() -> None:
