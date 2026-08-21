@@ -15,13 +15,21 @@ import { TerritorySearch } from "./components/TerritorySearch";
 import { uploadLayer, type LayerSummary } from "./api/layers";
 
 const format = new Intl.NumberFormat("fr-FR");
-type ThemeId = "health" | "education" | "sport" | "culture";
+type ThemeId = "health" | "education" | "early_childhood" | "sport" | "culture" | "social" | "public_services" | "mobility" | "commerce" | "environment" | "safety" | "tourism";
 type Workspace = "observe" | "decide" | "compare" | "report";
 const themes: Record<ThemeId, { label: string; eyebrow: string; title: string; description: string }> = {
   health: { label: "Santé", eyebrow: "ACCÈS AUX SOINS", title: "Où implanter le prochain service de santé ?", description: "Réduire les déserts de soins en priorisant les secteurs vulnérables." },
   education: { label: "Éducation", eyebrow: "ACCÈS À L’ÉDUCATION", title: "Où renforcer l’offre éducative ?", description: "Identifier les secteurs éloignés des équipements d’apprentissage." },
   sport: { label: "Sport", eyebrow: "ACCÈS AU SPORT", title: "Où créer le prochain équipement sportif ?", description: "Rééquilibrer l’accès aux équipements sportifs de proximité." },
   culture: { label: "Culture", eyebrow: "ACCÈS À LA CULTURE", title: "Où développer l’offre culturelle ?", description: "Repérer les quartiers sous-dotés en services culturels de proximité." },
+  early_childhood: { label: "Petite enfance", eyebrow: "PETITE ENFANCE", title: "Où renforcer l’accueil de la petite enfance ?", description: "Mesurer l’accès aux crèches et structures d’accueil." },
+  social: { label: "Solidarité et social", eyebrow: "SOLIDARITÉ", title: "Où renforcer les services sociaux ?", description: "Prioriser les secteurs vulnérables éloignés des services sociaux." },
+  public_services: { label: "Services publics", eyebrow: "SERVICES PUBLICS", title: "Où rapprocher les services publics ?", description: "Analyser la proximité des services administratifs essentiels." },
+  mobility: { label: "Mobilité", eyebrow: "MOBILITÉ", title: "Où améliorer l’offre de mobilité ?", description: "Identifier les secteurs insuffisamment desservis par les services de mobilité." },
+  commerce: { label: "Commerce et proximité", eyebrow: "COMMERCE", title: "Où soutenir l’offre de proximité ?", description: "Repérer les quartiers éloignés des commerces et services quotidiens." },
+  environment: { label: "Environnement", eyebrow: "ENVIRONNEMENT", title: "Où renforcer les services environnementaux ?", description: "Étudier l’accès aux espaces verts et aux services environnementaux." },
+  safety: { label: "Sécurité et secours", eyebrow: "SÉCURITÉ", title: "Où renforcer la couverture de sécurité ?", description: "Analyser la proximité des services de police, secours et incendie." },
+  tourism: { label: "Tourisme et patrimoine", eyebrow: "TOURISME", title: "Où valoriser l’offre touristique ?", description: "Identifier les secteurs propices aux services touristiques et patrimoniaux." },
 };
 const layerDefinitions: Array<{
   id: DecisionLayerId;
@@ -166,9 +174,13 @@ export function App() {
           <div className="eyebrow">ÉTUDE 01 · {themes[theme].eyebrow}</div>
           <h1>{workspace === "observe" ? `Observer l’offre ${themes[theme].label.toLowerCase()}` : workspace === "compare" ? "Comparer les scénarios" : workspace === "report" ? "Restituer la décision" : themes[theme].title}</h1>
           <p>{workspace === "observe" ? "Explorez l’offre existante, la demande et les secteurs non desservis." : workspace === "compare" ? "Comparez les alternatives avec des indicateurs homogènes et explicables." : workspace === "report" ? "Produisez une note professionnelle avec méthode, sources et limites." : themes[theme].description}</p>
-          <section><label>THÉMATIQUE TERRITORIALE</label><div className="theme-switch">
-            {(Object.keys(themes) as ThemeId[]).map((id) => <button className={theme === id ? "active" : ""} onClick={() => { setTheme(id); setEquipmentLayer(null); setUploadError(null); }} key={id}>{themes[id].label}</button>)}
-          </div></section>
+          <section className="theme-catalogue"><label>POLITIQUE PUBLIQUE ANALYSÉE</label>
+            <select value={theme} onChange={(event) => { setTheme(event.target.value as ThemeId); setEquipmentLayer(null); setUploadError(null); }}>
+              <optgroup label="Population et services essentiels"><option value="health">Santé</option><option value="education">Éducation</option><option value="early_childhood">Petite enfance</option><option value="social">Solidarité et social</option></optgroup>
+              <optgroup label="Cadre de vie"><option value="sport">Sport</option><option value="culture">Culture</option><option value="environment">Environnement</option><option value="tourism">Tourisme et patrimoine</option></optgroup>
+              <optgroup label="Fonctionnement urbain"><option value="public_services">Services publics</option><option value="mobility">Mobilité</option><option value="commerce">Commerce et proximité</option><option value="safety">Sécurité et secours</option></optgroup>
+            </select><small>12 thématiques municipales. Importez une couche métier lorsqu’aucun référentiel local n’est disponible.</small>
+          </section>
           <section className="equipment-import">
             <label>DONNÉES MÉTIER</label>
             <input ref={uploadInput} hidden type="file" accept=".geojson,.json,.gpkg,.zip,.kml,.csv" onChange={(event) => {
