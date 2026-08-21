@@ -7,6 +7,10 @@ export type DecisionWeights = {
 };
 export type DecisionResult = {
   method: string;
+  theme: string;
+  theme_label: string;
+  has_actionable_gain: boolean;
+  decision_message?: string | null;
   data_status: string;
   current_access_rate: number;
   scenario_access_rate: number;
@@ -37,6 +41,7 @@ export async function runSiteSelection(input: {
   territoryName: string;
   territoryCode: string;
   population: number;
+  theme: string;
   mode: string;
   thresholdMinutes: number;
   weights: DecisionWeights;
@@ -49,6 +54,7 @@ export async function runSiteSelection(input: {
       territory_name: input.territoryName,
       territory_code: input.territoryCode,
       population: input.population,
+      theme: input.theme,
       mode: input.mode,
       threshold_minutes: input.thresholdMinutes,
       weights: input.weights,

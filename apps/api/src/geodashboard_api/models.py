@@ -74,6 +74,7 @@ class DecisionRequest(BaseModel):
     territory_name: str = Field(min_length=1, max_length=120)
     territory_code: str = Field(pattern=r"^[0-9A-Z]{5}$")
     population: int = Field(ge=1)
+    theme: str = Field(default="health", pattern=r"^(health|education|sport|culture)$")
     mode: str = Field(default="pedestrian", pattern=r"^(pedestrian|bicycle|car)$")
     threshold_minutes: int = Field(default=15, ge=5, le=30)
     weights: DecisionWeights = Field(default_factory=DecisionWeights)
@@ -83,6 +84,10 @@ class DecisionResult(BaseModel):
     """Diagnostic d'accessibilité et classement multicritère cartographiable."""
 
     method: str
+    theme: str = "health"
+    theme_label: str = "Santé"
+    has_actionable_gain: bool = True
+    decision_message: str | None = None
     data_status: str
     current_access_rate: float
     scenario_access_rate: float

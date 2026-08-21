@@ -118,12 +118,22 @@ async def enrich_decision_with_ign(
 
     gained = max(0, scenario_people - current_people)
     versions = sorted({item.resource_version for item in isochrones if item.resource_version})
+    actionable = gained > 0
     recommendation = dict(result.recommendation)
     recommendation["gained_people"] = gained
     recommendation["explanation"] = (
-        "Le site A est préqualifié par le modèle multicritère ; son impact est ensuite "
-        f"mesuré sur le réseau IGN : +{gained:,} habitants accessibles."
-    ).replace(",", " ")
+        (
+            "Le site A est préqualifié par le modèle multicritère ; son impact est ensuite "
+            f"mesuré sur le réseau IGN : +{gained:,} habitants accessibles."
+        ).replace(",", " ")
+        if actionable
+        else (
+            "Aucune nouvelle implantation prioritaire : l'isochrone IGN ne mesure aucun "
+            "gain au seuil choisi. Le moteur ne formule donc pas de recommandation artificielle."
+        )
+    )
+    if not actionable:
+        recommendation.update({"rank": 0, "score": 0})
     candidates_updated = result.candidates.copy()
     candidates_updated["features"] = [dict(feature) for feature in candidates]
     top_properties = dict(candidates_updated["features"][0].get("properties") or {})
@@ -132,6 +142,10 @@ async def enrich_decision_with_ign(
         **candidates_updated["features"][0],
         "properties": top_properties,
     }
+    if not actionable:
+        candidates_updated["features"] = []
+        scenario_area = current_area
+        scenario_people = current_people
     version_label = ", ".join(versions) if versions else "version fournie par le service"
     return result.model_copy(
         update={
@@ -150,6 +164,8 @@ async def enrich_decision_with_ign(
             "current_access_rate": round(current_people / analysis_population * 100, 1),
             "scenario_access_rate": round(scenario_people / analysis_population * 100, 1),
             "gained_people": gained,
+            "has_actionable_gain": actionable,
+            "decision_message": None if actionable else recommendation["explanation"],
             "underserved_people": max(0, analysis_population - current_people),
             "equity_gain": round(gained / analysis_population * 100, 1),
             "demand_grid": grid,
@@ -164,4 +180,3 @@ async def enrich_decision_with_ign(
             ],
         }
     )
-

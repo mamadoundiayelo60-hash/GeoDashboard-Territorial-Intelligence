@@ -6,12 +6,52 @@ from pathlib import Path
 from typing import Any
 
 import geopandas as gpd
-from shapely.geometry import box, mapping, shape
+from shapely.geometry import GeometryCollection, box, mapping, shape
 from shapely.ops import unary_union
 
 from geodashboard_api.models import DecisionRequest, DecisionResult
 
-HEALTH_AMENITIES = {"pharmacy", "clinic", "doctors", "hospital", "dentist"}
+THEMES = {
+    "health": {
+        "label": "Santé",
+        "amenity": {"pharmacy", "clinic", "doctors", "hospital", "dentist"},
+        "leisure": set(),
+        "tourism": set(),
+    },
+    "education": {
+        "label": "Éducation",
+        "amenity": {
+            "school",
+            "college",
+            "kindergarten",
+            "university",
+            "music_school",
+            "language_school",
+            "driving_school",
+        },
+        "leisure": set(),
+        "tourism": set(),
+    },
+    "sport": {
+        "label": "Sport",
+        "amenity": set(),
+        "leisure": {"sports_centre", "pitch", "stadium", "swimming_pool", "fitness_centre"},
+        "tourism": set(),
+    },
+    "culture": {
+        "label": "Culture",
+        "amenity": {
+            "library",
+            "arts_centre",
+            "theatre",
+            "cinema",
+            "community_centre",
+            "music_school",
+        },
+        "leisure": set(),
+        "tourism": {"museum", "gallery"},
+    },
+}
 SPEED_KMH = {"pedestrian": 4.5, "bicycle": 15.0, "car": 35.0}
 
 
@@ -54,10 +94,23 @@ def analyze_sites(
             water_exclusion = unary_union(water.geometry.tolist()).buffer(20)
 
     all_facilities = gpd.read_file(demo_path, engine="pyogrio").to_crs(4326)
-    health = all_facilities[all_facilities.get("amenity").isin(HEALTH_AMENITIES)].copy()
-    health = health[health.geometry.within(territory_wgs)].to_crs(metric_crs)
-    if health.empty:
-        health = all_facilities.head(8).to_crs(metric_crs)
+    if request.theme == "sport":
+        sport_path = demo_path.with_name("calais-sport-osm.geojson")
+        if sport_path.exists():
+            all_facilities = gpd.read_file(sport_path, engine="pyogrio").to_crs(4326)
+    theme = THEMES[request.theme]
+    mask = all_facilities.get("amenity").isin(theme["amenity"])
+    if "leisure" in all_facilities:
+        mask |= all_facilities["leisure"].isin(theme["leisure"])
+    if "tourism" in all_facilities:
+        mask |= all_facilities["tourism"].isin(theme["tourism"])
+    facilities = all_facilities[mask].copy()
+    facilities = facilities[facilities.geometry.within(territory_wgs)].to_crs(metric_crs)
+    if facilities.empty:
+        raise ValueError(
+            f"Aucun équipement {str(theme['label']).lower()} vérifié n'est disponible "
+            "dans le socle local. Le moteur refuse de fabriquer un diagnostic."
+        )
 
     cells: list[dict[str, Any]] = []
     uses_filosofi = bool(
@@ -113,9 +166,11 @@ def analyze_sites(
 
     analysis_population = sum(item["population"] for item in cells) or request.population
     radius = SPEED_KMH[request.mode] * 1000 * request.threshold_minutes / 60 / 1.28
-    facility_points = health.geometry.tolist()
+    facility_points = facilities.geometry.tolist()
     current_area = territory.intersection(
         unary_union([point.buffer(radius) for point in facility_points])
+        if facility_points
+        else GeometryCollection()
     )
 
     for item in cells:
@@ -191,8 +246,13 @@ def analyze_sites(
         )
     scored.sort(key=lambda row: row["score"], reverse=True)
     top = scored[0]
-    scenario_area = territory.intersection(current_area.union(top["item"]["center"].buffer(radius)))
-    scenario_people = current_people + top["gained"]
+    actionable = top["gained"] > 0
+    scenario_area = (
+        territory.intersection(current_area.union(top["item"]["center"].buffer(radius)))
+        if actionable
+        else current_area
+    )
+    scenario_people = current_people + top["gained"] if actionable else current_people
 
     grid_features = []
     for item in cells:
@@ -209,7 +269,7 @@ def analyze_sites(
             }
         )
     candidate_features = []
-    for rank, row in enumerate(scored[:5], 1):
+    for rank, row in enumerate(scored[:5] if actionable else [], 1):
         candidate_features.append(
             {
                 "type": "Feature",
@@ -228,24 +288,41 @@ def analyze_sites(
             }
         )
 
-    health_wgs = health.to_crs(4326)
-    facility_features = json.loads(health_wgs.to_json(drop_id=True))
-    gain_rate = top["gained"] / analysis_population * 100
-    recommendation = {
-        "rank": 1,
-        "score": round(top["score"], 1),
-        "gained_people": top["gained"],
-        "longitude": round(_web(top["item"]["center"], metric_crs)["coordinates"][0], 6),
-        "latitude": round(_web(top["item"]["center"], metric_crs)["coordinates"][1], 6),
-        "parcel_id": top["item"].get("parcel_id"),
-        "parcel_area_m2": top["item"].get("parcel_area_m2"),
-        "planning_zone": top["item"].get("zone_label"),
-        "explanation": (
-            "Le site A maximise le gain de population et dessert en priorité "
-            f"des mailles vulnérables : +{top['gained']:,} habitants accessibles."
-        ).replace(",", " "),
-    }
+    facilities_wgs = facilities.to_crs(4326)
+    facility_features = json.loads(facilities_wgs.to_json(drop_id=True))
+    gain_rate = top["gained"] / analysis_population * 100 if actionable else 0
+    recommendation = (
+        {
+            "rank": 1,
+            "score": round(top["score"], 1),
+            "gained_people": top["gained"],
+            "longitude": round(_web(top["item"]["center"], metric_crs)["coordinates"][0], 6),
+            "latitude": round(_web(top["item"]["center"], metric_crs)["coordinates"][1], 6),
+            "parcel_id": top["item"].get("parcel_id"),
+            "parcel_area_m2": top["item"].get("parcel_area_m2"),
+            "planning_zone": top["item"].get("zone_label"),
+            "explanation": (
+                "Le site A maximise le gain de population et dessert en priorité "
+                f"des mailles vulnérables : +{top['gained']:,} habitants accessibles."
+            ).replace(",", " "),
+        }
+        if actionable
+        else {
+            "rank": 0,
+            "score": 0,
+            "gained_people": 0,
+            "explanation": (
+                "Aucune nouvelle implantation prioritaire : le seuil choisi ne produit "
+                "aucun gain mesurable. Réduisez le seuil, changez de mode ou "
+                "analysez une autre thématique."
+            ),
+        }
+    )
     return DecisionResult(
+        theme=request.theme,
+        theme_label=str(theme["label"]),
+        has_actionable_gain=actionable,
+        decision_message=None if actionable else recommendation["explanation"],
         method="Préqualification multimodale — distance réseau estimée, calibration IGN à venir",
         data_status=(
             "Équipements OSM, INSEE Filosofi 2021, hydrographie OSM, zonage GPU "
@@ -291,7 +368,7 @@ def analyze_sites(
                 if uses_parcels
                 else []
             ),
-            {"name": "Équipements de santé", "provider": "OpenStreetMap — ODbL 1.0"},
+            {"name": f"Équipements — {theme['label']}", "provider": "OpenStreetMap — ODbL 1.0"},
             *(
                 [
                     {
